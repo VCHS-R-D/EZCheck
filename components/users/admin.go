@@ -1,35 +1,62 @@
 package users
 
 import (
-	"main/components/postgresmanager"
 	"main/components/internal"
+	"main/components/machines"
+	"main/components/postgresmanager"
 )
 
-var registrationTable = make(map[string]string)
+var adminRegistrationTable = make(map[string]string)
 
 type Admin struct {
 	ID              string
-	FingerprintHash string
+	FingerprintHash string `json:"-"`
 	Username        string
-	Password        string
+	Password        string `json:"-"`
 	FirstName       string
 	LastName        string
 }
 
-func GenerateTemporaryAdmin(fingerprintHash string) (string) {
+func GenerateTemporaryAdmin(fingerprintHash string) string {
 	code := internal.GenerateCode()
-	registrationTable[code] = fingerprintHash
+	adminRegistrationTable[code] = fingerprintHash
 	return code
 }
 
-func CreateAdmin(username, password, firstName, lastName, code string) (error) {
-	fingerprintHash, ok := registrationTable[code]
+func CreateAdmin(username, password, firstName, lastName, code string) error {
+	fingerprintHash, ok := adminRegistrationTable[code]
 	if !ok {
 		return nil
 	}
 
-	defer delete(registrationTable, code)
-	
+	defer delete(adminRegistrationTable, code)
+
 	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, FingerprintHash: fingerprintHash}
 	return postgresmanager.Save(&admin)
+}
+
+func ReadAdmin(id string) Admin {
+	var admin Admin
+	postgresmanager.Query(Admin{ID: id}, &admin)
+
+	return admin
+}
+
+func CertifyUser(username, machineID string) error {
+	var user User
+	var machine machines.Machine
+	err := postgresmanager.Query(User{Username: username}, &user)
+	if err != nil {
+		return err
+	}
+
+	err = postgresmanager.Query(machines.Machine{ID: machineID}, &machine)
+
+	if err != nil {
+		return err
+	}
+
+	err = postgresmanager.CreateAssociation(&user, "Machines", &machine)
+
+	return err
 }

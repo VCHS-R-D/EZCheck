@@ -70,3 +70,8 @@ func DeleteAssociation(model interface{}, key string, value interface{}) error {
 	err := postgresmanager.db.Model(model).Association(key).Delete(value)
 	return err
 }
+
+func ClearAssociations(model interface{}, key string) error {
+	err := postgresmanager.db.Model(model).Association(key).Clear()
+	return err
+}
