@@ -7,5 +7,6 @@ import (
 func Init() {
 	e := echo.New()
 	e.GET("/", testRouter)
-	e.Logger.Fatal(e.Start(":1323"))
+	e.GET("/:id", testParamRouter)
+	e.Logger.Fatal(e.Start(":3000"))
 }
