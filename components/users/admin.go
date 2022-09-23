@@ -11,10 +11,10 @@ var adminRegistrationTable = make(map[string]string)
 type Admin struct {
 	ID              string
 	FingerprintHash string `json:"-"`
-	Username        string
+	Username        string `json:"username"`
 	Password        string `json:"-"`
-	FirstName       string
-	LastName        string
+	FirstName       string `json:"firstname"`
+	LastName        string `json:"lastname"`
 }
 
 func GenerateTemporaryAdmin(fingerprintHash string) string {

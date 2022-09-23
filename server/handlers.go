@@ -14,3 +14,4 @@ func testParamRouter(c echo.Context) error {
 	id := c.Param("id")
 	return c.String(http.StatusOK, id)
 }
+
