@@ -9,5 +9,7 @@ func Init() {
 	e.GET("/", testRouter)
 	e.GET("/:id", testParamRouter)
 
+	e.POST("/admin/register", registerAdminRouter)
+
 	e.Logger.Fatal(e.Start(":3000"))
 }
