@@ -7,7 +7,6 @@ import (
 func Init() {
 	e := echo.New()
 	e.GET("/", testRouter)
-	e.GET("/:id", testParamRouter)
 
 	e.POST("/admin/register", registerAdminRouter)
 
