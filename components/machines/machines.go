@@ -3,8 +3,9 @@ package machines
 import "main/components/postgresmanager"
 
 type Machine struct {
-	ID   string
-	Name string
+	ID    string
+	Name  string
+	InUSE bool
 }
 
 func CreateMachine(id, name string) {
@@ -27,6 +28,5 @@ func DeleteMachine(id string) error {
 	if err != nil {
 		return err
 	}
-
 	return err
 }

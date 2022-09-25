@@ -18,5 +18,6 @@ func registerAdminRouter(c echo.Context) error {
 		return err
 	}
 
+
 	return c.JSON(http.StatusCreated, user)
 }

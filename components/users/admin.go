@@ -13,8 +13,8 @@ type Admin struct {
 	FingerprintHash string `json:"-"`
 	Username        string `json:"username"`
 	Password        string `json:"-"`
-	FirstName       string `json:"firstname"`
-	LastName        string `json:"lastname"`
+	FirstName       string `json:"first"`
+	LastName        string `json:"last"`
 }
 
 func GenerateTemporaryAdmin(fingerprintHash string) string {
