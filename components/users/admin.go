@@ -6,32 +6,18 @@ import (
 	"main/components/postgresmanager"
 )
 
-var adminRegistrationTable = make(map[string]string)
 
 type Admin struct {
 	ID              string
-	FingerprintHash string `json:"-"`
 	Username        string `json:"username"`
 	Password        string `json:"-"`
 	FirstName       string `json:"first"`
 	LastName        string `json:"last"`
 }
 
-func GenerateTemporaryAdmin(fingerprintHash string) string {
-	code := internal.GenerateCode()
-	adminRegistrationTable[code] = fingerprintHash
-	return code
-}
 
 func CreateAdmin(username, password, firstName, lastName, code string) error {
-	fingerprintHash, ok := adminRegistrationTable[code]
-	if !ok {
-		return nil
-	}
-
-	defer delete(adminRegistrationTable, code)
-
-	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, FingerprintHash: fingerprintHash}
+	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName}
 	return postgresmanager.Save(&admin)
 }
 
