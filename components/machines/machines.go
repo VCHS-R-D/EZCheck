@@ -9,7 +9,7 @@ type Machine struct {
 }
 
 func CreateMachine(id, name string) {
-	machine := Machine{ID: id, Name: name}
+	machine := Machine{ID: id, Name: name, InUSE: false}
 
 	postgresmanager.Save(&machine)
 }
