@@ -6,17 +6,15 @@ import (
 	"main/components/postgresmanager"
 )
 
-
 type Admin struct {
-	ID              string
-	Username        string `json:"username"`
-	Password        string `json:"-"`
-	FirstName       string `json:"first"`
-	LastName        string `json:"last"`
+	ID        string `json:"-"`
+	Username  string `json:"username"`
+	Password  string `json:"-"`
+	FirstName string `json:"first"`
+	LastName  string `json:"last"`
 }
 
-
-func CreateAdmin(username, password, firstName, lastName, code string) error {
+func CreateAdmin(username, password, firstName, lastName string) error {
 	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName}
 	return postgresmanager.Save(&admin)
 }

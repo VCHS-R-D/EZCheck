@@ -7,10 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func testRouter(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
-}
-
 func registerAdminRouter(c echo.Context) error {
 	user := new(users.Admin)
 	err := c.Bind(&user)
@@ -18,6 +14,19 @@ func registerAdminRouter(c echo.Context) error {
 		return err
 	}
 
+	users.CreateAdmin(user.Username, user.Password, user.FirstName, user.LastName)
+
+	return c.JSON(http.StatusCreated, user)
+}
+
+func registerStudentRouter(c echo.Context) error {
+	user := new(users.User)
+
+	if err := c.Bind(&user); err != nil {
+		return err
+	}
+
+	users.CreateUser(user.Username, user.Password, user.FirstName, user.LastName)
 
 	return c.JSON(http.StatusCreated, user)
 }

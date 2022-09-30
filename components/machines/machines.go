@@ -3,9 +3,9 @@ package machines
 import "main/components/postgresmanager"
 
 type Machine struct {
-	ID    string
-	Name  string
-	InUSE bool
+	ID    string `json:"machine_id"`
+	Name  string `json:"machine_name"`
+	InUSE bool `json:"in_use"`
 }
 
 func CreateMachine(id, name string) {

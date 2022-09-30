@@ -6,9 +6,9 @@ import (
 
 func Init() {
 	e := echo.New()
-	e.GET("/", testRouter)
 
 	e.POST("/admin/register", registerAdminRouter)
+	e.POST("/student/register", registerStudentRouter)
 
 	e.Logger.Fatal(e.Start(":3000"))
 }
