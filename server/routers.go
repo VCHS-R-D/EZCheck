@@ -7,8 +7,11 @@ import (
 func Init() {
 	e := echo.New()
 
-	e.POST("/admin/register", registerAdminRouter)
-	e.POST("/student/register", registerStudentRouter)
+	e.POST("/register/admin", registerAdminRouter)
+	e.POST("/register/student", registerStudentRouter)
+
+	// g := e.Group("/admin")
+	// g.Use(middleware(BasicAuth(func()))
 
 	e.Logger.Fatal(e.Start(":3000"))
 }
