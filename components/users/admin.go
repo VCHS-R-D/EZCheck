@@ -85,7 +85,7 @@ func CertifyUser(userID, machineID string) error {
 	}
 
 	err = postgresmanager.CreateAssociation(&user, "Machines", machine)
-	log.Log(fmt.Sprintf("Authorized user %s %s to machine %s", user.FirstName, user.LastName, machine.Name))
+	log.Log(fmt.Sprintf("Authorized user %s to machine %s", user.Username, machine.Name))
 
 	return err
 }
@@ -105,7 +105,7 @@ func UncertifyUser(userID, machineID string) error {
 	}
 
 	err = postgresmanager.DeleteAssociation(&user, "Machines", machine)
-	log.Log(fmt.Sprintf("Unauthorized user %s %s to machine %s", user.FirstName, user.LastName, machine.Name))
+	log.Log(fmt.Sprintf("Unauthorized user %s to machine %s", user.Username, machine.Name))
 
 	return err
 }

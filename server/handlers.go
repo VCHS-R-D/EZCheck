@@ -3,33 +3,14 @@ package server
 import (
 	"main/components/postgresmanager"
 	"main/components/users"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func registerAdminRouter(c echo.Context) error {
-	user := new(users.Admin)
-	err := c.Bind(&user)
-	if err != nil {
-		return err
-	}
-
-	users.CreateAdmin(user.Username, user.Password, user.FirstName, user.LastName)
-
-	return c.JSON(http.StatusCreated, user)
-}
-
-func registerStudentRouter(c echo.Context) error {
-	user := new(users.User)
-
-	if err := c.Bind(&user); err != nil {
-		return err
-	}
-
-	users.CreateUser(user.Username, user.Password, user.FirstName, user.LastName)
-
-	return c.JSON(http.StatusCreated, user)
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func AdminAuth(username, password string, c echo.Context) (bool, error) {
@@ -37,7 +18,7 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 	if err := postgresmanager.Query(users.Admin{Username: username}, &admin); err != nil {
 		return false, nil
 	} else {
-		if admin.Password == password {
+		if CheckPasswordHash(password, admin.Password) {
 			return true, nil
 		}
 	}
