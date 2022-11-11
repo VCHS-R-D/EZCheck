@@ -87,9 +87,12 @@ func Authenticate(code, machineID string) string {
 
 	for _, machine := range machines {
 		if machine.ID == machineID {
-			machine.SignIn()
+			actions, err := machine.SignIn()
+			if err != nil {
+				return "{\"error\": \"could not sign in\"}"
+			}
 			log.Log(fmt.Sprintf("%s %s signed in to machine %s", user.FirstName, user.LastName, machine.Name))
-			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, machine.Actions)
+			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions)
 		}
 	}
 

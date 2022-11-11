@@ -28,8 +28,8 @@ func ReadMachines() []Machine {
 	return machines
 }
 
-func (m *Machine) SignIn() error {
-	return postgresmanager.Update(m, &Machine{InUSE: true})
+func (m *Machine) SignIn() ([]Action, error) {
+	return m.Actions, postgresmanager.Update(m, &Machine{InUSE: true})
 }
 
 func (m *Machine) SignOut() error {
