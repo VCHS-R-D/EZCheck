@@ -28,13 +28,12 @@ func ReadMachines() []Machine {
 	return machines
 }
 
-func SignOut(id string) error {
-	machine := Machine{ID: id}
-	err := postgresmanager.Query(&machine, &machine)
-	if err != nil {
-		return err
-	}
-	return postgresmanager.Update(machine, &Machine{InUSE: false})
+func (m *Machine) SignIn() error {
+	return postgresmanager.Update(m, &Machine{InUSE: true})
+}
+
+func (m *Machine) SignOut() error {
+	return postgresmanager.Update(m, &Machine{InUSE: false})
 }
 
 func DeleteMachine(id string) error {

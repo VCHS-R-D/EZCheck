@@ -2,7 +2,9 @@ package users
 
 import (
 	"errors"
+	"fmt"
 	"main/components/internal"
+	"main/components/log"
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"time"
@@ -83,6 +85,7 @@ func CertifyUser(code, machineID string) error {
 	}
 
 	err = postgresmanager.CreateAssociation(&user, "Machines", machine)
+	log.Log(fmt.Sprintf("Authorized user %s %s to machine %s", user.FirstName, user.LastName, machine.Name))
 
 	return err
 }

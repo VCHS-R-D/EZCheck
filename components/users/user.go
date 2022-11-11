@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"main/components/internal"
+	"main/components/log"
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"time"
@@ -72,7 +73,7 @@ func ReadUser(id string) User {
 
 func Authenticate(code, machineID string) string {
 	var user *User
-	
+
 	if postgresmanager.Query(&User{Code: code}, &user) != nil {
 		return "{\"error\": \"user not found\"}"
 	}
@@ -86,9 +87,12 @@ func Authenticate(code, machineID string) string {
 
 	for _, machine := range machines {
 		if machine.ID == machineID {
+			machine.SignIn()
+			log.Log(fmt.Sprintf("%s %s signed in to machine %s", user.FirstName, user.LastName, machine.Name))
 			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, machine.Actions)
 		}
 	}
 
+	log.Log(fmt.Sprintf("%s %s failed to sign in to machine %s", user.FirstName, user.LastName, machineID))
 	return "{\"authorized\": false}"
 }
