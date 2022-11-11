@@ -12,7 +12,7 @@ import (
 type User struct {
 	ID        string              `json:"-" gorm:"primaryKey"`
 	Username  string              `json:"username" gorm:"uniqueIndex"`
-	Password  string              `json:"-"`
+	Password  string              `json:"password"`
 	FirstName string              `json:"first" gorm:"index"`
 	LastName  string              `json:"last" gorm:"index"`
 	Grade     string              `json:"grade" gorm:"index"`
@@ -39,13 +39,6 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	return err
 }
 
-func ReadUser(id string) User {
-	var user User
-	postgresmanager.Query(User{ID: id}, &user)
-
-	return user
-}
-
 func GetUser(id string) (error, User) {
 	var user User
 	var machines []*machines.Machine
@@ -57,6 +50,7 @@ func GetUser(id string) (error, User) {
 	}
 
 	user.Machines = machines
+	user.Password = ""
 
 	return nil, user
 }
