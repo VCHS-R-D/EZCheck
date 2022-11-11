@@ -70,10 +70,10 @@ func ReadAdmin(id string) Admin {
 	return admin
 }
 
-func CertifyUser(code, machineID string) error {
+func CertifyUser(userID, machineID string) error {
 	var user *User
 	var machine *machines.Machine
-	err := postgresmanager.Query(User{Code: code}, &user)
+	err := postgresmanager.Query(User{ID: userID}, &user)
 	if err != nil {
 		return err
 	}
@@ -88,6 +88,32 @@ func CertifyUser(code, machineID string) error {
 	log.Log(fmt.Sprintf("Authorized user %s %s to machine %s", user.FirstName, user.LastName, machine.Name))
 
 	return err
+}
+
+func UncertifyUser(userID, machineID string) error {
+	var user *User
+	var machine *machines.Machine
+	err := postgresmanager.Query(User{ID: userID}, &user)
+	if err != nil {
+		return err
+	}
+
+	err = postgresmanager.Query(machines.Machine{ID: machineID}, &machine)
+
+	if err != nil {
+		return err
+	}
+
+	err = postgresmanager.DeleteAssociation(&user, "Machines", machine)
+	log.Log(fmt.Sprintf("Unauthorized user %s %s to machine %s", user.FirstName, user.LastName, machine.Name))
+
+	return err
+}
+
+func SearchUsers(query map[string]interface{}) []User {
+	var users []User
+	postgresmanager.GroupQuery(query, &users)
+	return users
 }
 
 func DeleteAdmin(id string) error {

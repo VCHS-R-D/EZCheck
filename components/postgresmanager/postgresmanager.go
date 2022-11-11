@@ -36,8 +36,13 @@ func Query(data, store interface{}) error {
 	return res.Error
 }
 
-func QueryAll(data interface{}) error {
-	res := postgresmanager.db.Find(data)
+func GroupQuery(model, store interface{}) error {
+	res := postgresmanager.db.Where(model).Find(store)
+	return res.Error
+}
+
+func QueryAll(store interface{}) error {
+	res := postgresmanager.db.Find(store)
 	return res.Error
 }
 
