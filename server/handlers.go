@@ -1,6 +1,7 @@
 package server
 
 import (
+	"main/components/postgresmanager"
 	"main/components/users"
 	"net/http"
 
@@ -29,4 +30,17 @@ func registerStudentRouter(c echo.Context) error {
 	users.CreateUser(user.Username, user.Password, user.FirstName, user.LastName)
 
 	return c.JSON(http.StatusCreated, user)
+}
+
+func AdminAuth(username, password string, c echo.Context) (bool, error) {
+	var admin users.Admin
+	if err := postgresmanager.Query(users.Admin{Username: username}, &admin); err != nil {
+		return false, nil
+	} else {
+		if admin.Password == password {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
