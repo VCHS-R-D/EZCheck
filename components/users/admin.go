@@ -20,7 +20,7 @@ type Admin struct {
 	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
-func CreateAdmin(username, password, firstName, lastName, code string) error {
+func (a *Admin) CreateAdmin() error {
 
 	var a *Admin
 	err := postgresmanager.Query(&Admin{Code: code}, &a)
@@ -29,7 +29,7 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 		return err
 	}
 
-	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}
+	admin := Admin{ID: internal.GenerateUUID(), Username: a.Username, Password: a.Password, FirstName: a.FirstName, LastName: a.LastName, Code: a.Code}
 
 	err = postgresmanager.Save(&admin)
 

@@ -8,6 +8,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func newAdmin(c echo.Context) error {
+	var admin Admin
+	if err := c.Bind(&admin); err != nil {
+		return err
+	}
+
+	err := admin.CreateAdmin()
+
+}
+
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
