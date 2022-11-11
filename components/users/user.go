@@ -72,6 +72,21 @@ func ReadUser(id string) User {
 	return user
 }
 
+func GetUser(id string) (error, User) {
+	var user User
+	var machines []*machines.Machine
+
+	if err := postgresmanager.Query(User{ID: id}, &user); err != nil {
+		return err, User{}
+	} else if err := postgresmanager.ReadAssociation(&user, "Machines", &machines); err != nil {
+		return err, User{}
+	}
+
+	user.Machines = machines
+
+	return nil, user
+}
+
 func Authenticate(code, machineID string) string {
 	var user *User
 
