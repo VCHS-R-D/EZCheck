@@ -2,11 +2,6 @@ package machines
 
 import "main/components/postgresmanager"
 
-const (
-	PowerOn int = iota
-	PowerOff
-)
-
 type Action struct {
 	ID int `json:"action_id"`
 }
