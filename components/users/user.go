@@ -78,7 +78,7 @@ func AuthenticateUser(code, machineID string) string {
 		}
 	}
 
-	log.Log(fmt.Sprintf("%s failed to sign in to machine %s", user.Username, machineID))
+	log.Log(fmt.Sprintf("%s tried to sign in to machine %s", user.Username, machineID))
 	return "{\"authorized\": false}"
 }
 
