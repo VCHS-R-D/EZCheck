@@ -32,3 +32,11 @@ func Log(message string) error {
 	}
 	return nil
 }
+
+func Read() (string, error) {
+	data, err := os.ReadFile("log.txt")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
