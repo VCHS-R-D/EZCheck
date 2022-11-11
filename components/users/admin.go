@@ -13,7 +13,7 @@ import (
 type Admin struct {
 	ID        string    `json:"-" gorm:"primaryKey"`
 	Username  string    `json:"username" gorm:"uniqueIndex"`
-	Password  string    `json:"-"`
+	Password  string    `json:"password"`
 	FirstName string    `json:"first" gorm:"index"`
 	LastName  string    `json:"last" gorm:"index"`
 	Code      string    `json:"code" gorm:"uniqueIndex"`
@@ -66,7 +66,7 @@ func CreateAdmin(username, password, firstName, lastName string) (string, error)
 func ReadAdmin(id string) Admin {
 	var admin Admin
 	postgresmanager.Query(Admin{ID: id}, &admin)
-
+	admin.Password = ""
 	return admin
 }
 
