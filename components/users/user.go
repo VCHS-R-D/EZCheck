@@ -99,3 +99,7 @@ func Authenticate(code, machineID string) string {
 	log.Log(fmt.Sprintf("%s %s failed to sign in to machine %s", user.FirstName, user.LastName, machineID))
 	return "{\"authorized\": false}"
 }
+
+func DeleteUser(id string) error {
+	return postgresmanager.Delete(User{ID: id})
+}

@@ -89,3 +89,7 @@ func CertifyUser(code, machineID string) error {
 
 	return err
 }
+
+func DeleteAdmin(id string) error {
+	return postgresmanager.Delete(Admin{ID: id})
+}
