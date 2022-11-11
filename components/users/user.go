@@ -16,13 +16,14 @@ type User struct {
 	Password  string              `json:"-"`
 	FirstName string              `json:"first" gorm:"index"`
 	LastName  string              `json:"last" gorm:"index"`
+	Grade    string              `json:"grade" gorm:"index"`
 	Code      string              `json:"code" gorm:"uniqueIndex"`
 	Machines  []*machines.Machine `gorm:"many2many:users_machines"`
 	CreatedAt time.Time           `json:"-" gorm:"index"`
 	UpdatedAt time.Time           `json:"-" gorm:"index"`
 }
 
-func CreateUser(username, password, firstName, lastName string) (string, error) {
+func CreateUser(username, password, firstName, lastName, grade string) (string, error) {
 	code := internal.GenerateCode()
 
 	var checkErr error
@@ -57,7 +58,7 @@ func CreateUser(username, password, firstName, lastName string) (string, error) 
 		return "", err
 	}
 
-	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}
+	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
 	if postgresmanager.Save(&user) != nil {
 		return "", postgresmanager.Save(&user)
 	}
@@ -91,12 +92,12 @@ func Authenticate(code, machineID string) string {
 			if err != nil {
 				return "{\"error\": \"could not sign in\"}"
 			}
-			log.Log(fmt.Sprintf("%s %s signed in to machine %s", user.FirstName, user.LastName, machine.Name))
+			log.Log(fmt.Sprintf("%s signed in to machine %s", user.Username, machine.Name))
 			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions)
 		}
 	}
 
-	log.Log(fmt.Sprintf("%s %s failed to sign in to machine %s", user.FirstName, user.LastName, machineID))
+	log.Log(fmt.Sprintf("%s failed to sign in to machine %s", user.Username, machineID))
 	return "{\"authorized\": false}"
 }
 
