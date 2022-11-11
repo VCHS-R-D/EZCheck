@@ -109,7 +109,7 @@ func AuthenticateAdmin(code, machineID string) string {
 		log.Log(fmt.Sprintf("%s failed to sign in to machine %s", admin.Username, machineID))
 		return "{\"error\": \"could not sign in\"}"
 	}
-	
+
 	log.Log(fmt.Sprintf("%s signed in to machine %s", admin.Username, machine.Name))
 	return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", admin.FirstName, admin.LastName, actions)
 }
