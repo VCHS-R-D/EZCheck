@@ -1,7 +1,6 @@
 package users
 
 import (
-	"errors"
 	"fmt"
 	"main/components/internal"
 	"main/components/log"
@@ -16,53 +15,28 @@ type User struct {
 	Password  string              `json:"-"`
 	FirstName string              `json:"first" gorm:"index"`
 	LastName  string              `json:"last" gorm:"index"`
-	Grade    string              `json:"grade" gorm:"index"`
+	Grade     string              `json:"grade" gorm:"index"`
 	Code      string              `json:"code" gorm:"uniqueIndex"`
 	Machines  []*machines.Machine `gorm:"many2many:users_machines"`
 	CreatedAt time.Time           `json:"-" gorm:"index"`
 	UpdatedAt time.Time           `json:"-" gorm:"index"`
 }
 
-func CreateUser(username, password, firstName, lastName, grade string) (string, error) {
-	code := internal.GenerateCode()
-
-	var checkErr error
-	var err error
-
-	var count int
+func CreateUser(username, password, firstName, lastName, grade, code string) error {
 
 	var u *User
-	checkErr = postgresmanager.Query(&User{Code: code}, &u)
-	checkErrStr := ""
-	if checkErr != nil {
-		checkErrStr = checkErr.Error()
-	}
+	err := postgresmanager.Query(&User{Code: code}, &u)
 
-	for checkErrStr != "record not found" {
-		if count < 1000 {
-			code = internal.GenerateCode()
-			checkErr = postgresmanager.Query(&User{Code: code}, &u)
-			if checkErr != nil {
-				checkErrStr = checkErr.Error()
-			} else {
-				checkErrStr = ""
-			}
-			count++
-		} else {
-			err = errors.New("could not generate new code for user")
-			break
-		}
-	}
-
-	if err != nil {
-		return "", err
+	if checkErr != "record not found" {
+		return error
 	}
 
 	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
 	if postgresmanager.Save(&user) != nil {
 		return "", postgresmanager.Save(&user)
 	}
-	return code, nil
+
+	return err
 }
 
 func ReadUser(id string) User {
