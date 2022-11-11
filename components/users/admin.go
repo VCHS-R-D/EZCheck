@@ -1,7 +1,6 @@
 package users
 
 import (
-	"errors"
 	"fmt"
 	"main/components/internal"
 	"main/components/log"
@@ -26,17 +25,13 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 	var a *Admin
 	err := postgresmanager.Query(&Admin{Code: code}, &a)
 
-	if err != "record not found" {
-		return error
+	if err.Error() != "record not found" {
+		return err
 	}
 
 	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}
 
-	err := postgresmanager.Save(&admin)
-
-	if err != nil {
-		return err
-	}
+	err = postgresmanager.Save(&admin)
 
 	return err
 }
@@ -91,6 +86,9 @@ func UncertifyUser(userID, machineID string) error {
 func SearchUsers(query map[string]interface{}) []User {
 	var users []User
 	postgresmanager.GroupQuery(query, &users)
+	for _, u := range users {
+		u.Password = ""
+	}
 	return users
 }
 

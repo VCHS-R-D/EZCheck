@@ -1,7 +1,9 @@
 package machines
 
 import (
+	"fmt"
 	"main/components/internal"
+	"main/components/log"
 	"main/components/postgresmanager"
 	"time"
 )
@@ -34,6 +36,7 @@ func (m *Machine) SignIn() ([]Action, error) {
 }
 
 func (m *Machine) SignOut() error {
+	log.Log(fmt.Sprintf("User signed out of machine: %s", m.Name))
 	return postgresmanager.Update(m, &Machine{InUSE: false})
 }
 

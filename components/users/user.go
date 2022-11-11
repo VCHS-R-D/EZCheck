@@ -27,34 +27,30 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	var u *User
 	err := postgresmanager.Query(&User{Code: code}, &u)
 
-	if err != "record not found" {
-		return error
+	if err.Error() != "record not found" {
+		return err
 	}
 
 	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
-	err := postgresmanager.Save(&user)
-
-	if err != nil {
-		return err
-	}
+	err = postgresmanager.Save(&user)
 
 	return err
 }
 
-func GetUser(id string) (error, User) {
+func GetUser(id string) (User, error) {
 	var user User
 	var machines []*machines.Machine
 
 	if err := postgresmanager.Query(User{ID: id}, &user); err != nil {
-		return err, User{}
+		return User{}, err
 	} else if err := postgresmanager.ReadAssociation(&user, "Machines", &machines); err != nil {
-		return err, User{}
+		return User{}, err
 	}
 
 	user.Machines = machines
 	user.Password = ""
 
-	return nil, user
+	return user, nil
 }
 
 func Authenticate(code, machineID string) string {
