@@ -7,7 +7,7 @@ import (
 func Init() {
 	e := echo.New()
 
-	// g := e.Group("/admin")
+	gAdmin := e.Group("/admin", middleware.BasicAuth(AdminAuth))
 
 	e.Logger.Fatal(e.Start(":3000"))
 }
