@@ -35,7 +35,14 @@ func (m *Machine) SignIn() ([]Action, error) {
 	return m.Actions, postgresmanager.Update(m, &Machine{InUSE: true})
 }
 
-func (m *Machine) SignOut() error {
+func SignOut(machineID string) error {
+
+	var m *Machine
+	err := postgresmanager.Query(Machine{ID: machineID}, &m)
+	if err != nil {
+		return err
+	}
+
 	log.Log(fmt.Sprintf("User signed out of machine: %s", m.Name))
 	return postgresmanager.Update(m, &Machine{InUSE: false})
 }
