@@ -53,7 +53,7 @@ func GetUser(id string) (User, error) {
 	return user, nil
 }
 
-func Authenticate(code, machineID string) string {
+func AuthenticateUser(code, machineID string) string {
 	var user *User
 
 	if postgresmanager.Query(&User{Code: code}, &user) != nil {
@@ -64,7 +64,7 @@ func Authenticate(code, machineID string) string {
 	err := postgresmanager.ReadAssociation(&user, "Machines", &machines)
 
 	if err != nil {
-		return "{\"error\": \"could not read machines\"}"
+		return "{\"error\": \"could not read user's machines\"}"
 	}
 
 	for _, machine := range machines {
