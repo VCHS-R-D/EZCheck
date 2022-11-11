@@ -1,6 +1,7 @@
 package machines
 
 import (
+	"main/components/internal"
 	"main/components/postgresmanager"
 	"time"
 )
@@ -14,9 +15,9 @@ type Machine struct {
 	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
-func CreateMachine(id, name string) error {
+func CreateMachine(name string) error {
 	actions := make([]Action, 0)
-	machine := Machine{ID: id, Name: name, InUSE: false, Actions: actions}
+	machine := Machine{ID: internal.GenerateUUID(), Name: name, InUSE: false, Actions: actions}
 	return postgresmanager.Save(&machine)
 }
 
