@@ -21,46 +21,24 @@ type Admin struct {
 	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
-func CreateAdmin(username, password, firstName, lastName string) (string, error) {
-	code := internal.GenerateCode()
-
-	var checkErr error
-	var err error
-
-	var count int
+func CreateAdmin(username, password, firstName, lastName, code string) error {
 
 	var a *Admin
-	checkErr = postgresmanager.Query(&Admin{Code: code}, &a)
-	checkErrStr := ""
-	if checkErr != nil {
-		checkErrStr = checkErr.Error()
-	}
+	err := postgresmanager.Query(&Admin{Code: code}, &a)
 
-	for checkErrStr != "record not found" {
-		if count < 1000 {
-			code = internal.GenerateCode()
-			checkErr = postgresmanager.Query(&Admin{Code: code}, &a)
-			if checkErr != nil {
-				checkErrStr = checkErr.Error()
-			} else {
-				checkErrStr = ""
-			}
-			count++
-		} else {
-			err = errors.New("could not generate new code for admin")
-			break
-		}
-	}
-
-	if err != nil {
-		return "", err
+	if err != "record not found" {
+		return error
 	}
 
 	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}
-	if postgresmanager.Save(&admin) != nil {
-		return "", postgresmanager.Save(&admin)
+
+	err := postgresmanager.Save(&admin)
+
+	if err != nil {
+		return err
 	}
-	return code, nil
+
+	return err
 }
 
 func ReadAdmin(id string) Admin {

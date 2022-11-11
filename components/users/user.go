@@ -32,8 +32,10 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	}
 
 	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
-	if postgresmanager.Save(&user) != nil {
-		return "", postgresmanager.Save(&user)
+	err := postgresmanager.Save(&user)
+
+	if err != nil {
+		return err
 	}
 
 	return err
