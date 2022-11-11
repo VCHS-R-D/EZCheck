@@ -5,7 +5,7 @@ import "main/components/postgresmanager"
 type Machine struct {
 	ID    string `json:"machine_id"`
 	Name  string `json:"machine_name"`
-	InUSE bool `json:"in_use"`
+	InUSE bool   `json:"in_use"`
 }
 
 func CreateMachine(id, name string) {
