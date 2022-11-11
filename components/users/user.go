@@ -1,9 +1,12 @@
 package users
 
 import (
+	"errors"
+	"fmt"
 	"main/components/internal"
 	"main/components/machines"
 	"main/components/postgresmanager"
+	"time"
 )
 
 type User struct {
@@ -12,10 +15,10 @@ type User struct {
 	Password  string              `json:"-"`
 	FirstName string              `json:"first" gorm:"index"`
 	LastName  string              `json:"last" gorm:"index"`
-	Code	  string			  `json:"code" gorm:"uniqueIndex"`
+	Code      string              `json:"code" gorm:"uniqueIndex"`
 	Machines  []*machines.Machine `gorm:"many2many:users_machines"`
-	CreatedAt    time.Time  `json:"-" gorm:"index"`
-	UpdatedAt    time.Time  `json:"-" gorm:"index"`
+	CreatedAt time.Time           `json:"-" gorm:"index"`
+	UpdatedAt time.Time           `json:"-" gorm:"index"`
 }
 
 func CreateUser(username, password, firstName, lastName string) (string, error) {
@@ -35,7 +38,7 @@ func CreateUser(username, password, firstName, lastName string) (string, error) 
 
 	for checkErrStr != "record not found" {
 		if count < 1000 {
-			code = codes.GenerateCode()
+			code = internal.GenerateCode()
 			checkErr = postgresmanager.Query(&User{Code: code}, &u)
 			if checkErr != nil {
 				checkErrStr = checkErr.Error()
@@ -50,7 +53,7 @@ func CreateUser(username, password, firstName, lastName string) (string, error) 
 	}
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}
@@ -65,4 +68,27 @@ func ReadUser(id string) User {
 	postgresmanager.Query(User{ID: id}, &user)
 
 	return user
+}
+
+func Authenticate(code, machineID string) string {
+	var user *User
+	
+	if postgresmanager.Query(&User{Code: code}, &user) != nil {
+		return "{\"error\": \"user not found\"}"
+	}
+
+	var machines []*machines.Machine
+	err := postgresmanager.ReadAssociation(&user, "Machines", &machines)
+
+	if err != nil {
+		return "{\"error\": \"could not read machines\"}"
+	}
+
+	for _, machine := range machines {
+		if machine.ID == machineID {
+			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, machine.Actions)
+		}
+	}
+
+	return "{\"authorized\": false}"
 }

@@ -1,20 +1,22 @@
 package users
 
 import (
+	"errors"
 	"main/components/internal"
 	"main/components/machines"
 	"main/components/postgresmanager"
+	"time"
 )
 
 type Admin struct {
-	ID        string `json:"-" gorm:"primaryKey"`
-	Username  string `json:"username" gorm:"uniqueIndex"`
-	Password  string `json:"-"`
-	FirstName string `json:"first" gorm:"index"`
-	LastName  string `json:"last" gorm:"index"`
-	Code	  string `json:"code" gorm:"uniqueIndex"`
-	CreatedAt    time.Time  `json:"-" gorm:"index"`
-	UpdatedAt    time.Time  `json:"-" gorm:"index"`
+	ID        string    `json:"-" gorm:"primaryKey"`
+	Username  string    `json:"username" gorm:"uniqueIndex"`
+	Password  string    `json:"-"`
+	FirstName string    `json:"first" gorm:"index"`
+	LastName  string    `json:"last" gorm:"index"`
+	Code      string    `json:"code" gorm:"uniqueIndex"`
+	CreatedAt time.Time `json:"-" gorm:"index"`
+	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
 func CreateAdmin(username, password, firstName, lastName string) (string, error) {
@@ -34,7 +36,7 @@ func CreateAdmin(username, password, firstName, lastName string) (string, error)
 
 	for checkErrStr != "record not found" {
 		if count < 1000 {
-			code = codes.GenerateCode()
+			code = internal.GenerateCode()
 			checkErr = postgresmanager.Query(&Admin{Code: code}, &a)
 			if checkErr != nil {
 				checkErrStr = checkErr.Error()
@@ -49,7 +51,7 @@ func CreateAdmin(username, password, firstName, lastName string) (string, error)
 	}
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}

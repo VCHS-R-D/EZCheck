@@ -1,19 +1,22 @@
 package machines
 
-import "main/components/postgresmanager"
+import (
+	"main/components/postgresmanager"
+	"time"
+)
 
 type Machine struct {
-	ID    string `json:"machine_id" gorm:"primaryKey"`
-	Name  string `json:"machine_name" gorm:"uniqueIndex"`
-	InUSE bool `json:"in_use" gorm:"index"`
-	Students  []*users.User `gorm:"many2many:users_machines"`
-	CreatedAt    time.Time  `json:"-" gorm:"index"`
-	UpdatedAt    time.Time  `json:"-" gorm:"index"`
+	ID        string    `json:"machine_id" gorm:"primaryKey"`
+	Name      string    `json:"machine_name" gorm:"uniqueIndex"`
+	InUSE     bool      `json:"in_use" gorm:"index"`
+	Actions   []Action  `json:"actions" gorm:"-"`
+	CreatedAt time.Time `json:"-" gorm:"index"`
+	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
 func CreateMachine(id, name string) error {
-	machine := Machine{ID: id, Name: name, InUSE: false}
-
+	actions := make([]Action, 0)
+	machine := Machine{ID: id, Name: name, InUSE: false, Actions: actions}
 	return postgresmanager.Save(&machine)
 }
 
@@ -26,7 +29,12 @@ func ReadMachines() []Machine {
 }
 
 func SignOut(id string) error {
-	postgresmanager.Update(ID: id, InUSE: false)
+	machine := Machine{ID: id}
+	err := postgresmanager.Query(&machine, &machine)
+	if err != nil {
+		return err
+	}
+	return postgresmanager.Update(machine, &Machine{InUSE: false})
 }
 
 func DeleteMachine(id string) error {
