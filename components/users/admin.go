@@ -22,7 +22,7 @@ type Admin struct {
 	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
-func (a *Admin) CreateAdmin() error {
+func CreateAdmin(username, password, firstName, lastName, code string) error {
 
 	var a *Admin
 	err := postgresmanager.Query(&Admin{Code: code}, &a)
