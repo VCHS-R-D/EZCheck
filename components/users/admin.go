@@ -7,10 +7,12 @@ import (
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Admin struct {
-	ID        string    `json:"-" gorm:"primaryKey"`
+	ID        string    `json:"id" gorm:"primaryKey"`
 	Username  string    `json:"username" gorm:"uniqueIndex"`
 	Password  string    `json:"password"`
 	FirstName string    `json:"first" gorm:"index"`
@@ -29,18 +31,32 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 		return err
 	}
 
-	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Code: code}
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	admin := Admin{ID: internal.GenerateUUID(), Username: username, Password: hashedPassword, FirstName: firstName, LastName: lastName, Code: code}
 
 	err = postgresmanager.Save(&admin)
 
 	return err
 }
 
-func ReadAdmin(id string) Admin {
+func GetAdmin(username, password string) (Admin, error) {
 	var admin Admin
-	postgresmanager.Query(Admin{ID: id}, &admin)
+	err := postgresmanager.Query(&Admin{Username: username}, &admin)
+	if err != nil {
+		return Admin{}, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(password))
+	if err != nil {
+		return Admin{}, err
+	}
+	
 	admin.Password = ""
-	return admin
+	return admin, nil
 }
 
 func CertifyUser(userID, machineID string) error {
@@ -116,4 +132,9 @@ func AuthenticateAdmin(code, machineID string) string {
 
 func DeleteAdmin(id string) error {
 	return postgresmanager.Delete(Admin{ID: id})
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }

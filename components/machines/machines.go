@@ -9,8 +9,8 @@ import (
 )
 
 type Machine struct {
-	ID        string    `json:"machine_id" gorm:"primaryKey"`
-	Name      string    `json:"machine_name" gorm:"uniqueIndex"`
+	ID        string    `json:"id" gorm:"primaryKey"`
+	Name      string    `json:"name" gorm:"uniqueIndex"`
 	InUSE     bool      `json:"in_use" gorm:"index"`
 	Actions   []Action  `json:"actions"`
 	CreatedAt time.Time `json:"-" gorm:"index"`

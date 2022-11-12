@@ -7,10 +7,12 @@ import (
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID        string              `json:"-" gorm:"primaryKey"`
+	ID        string              `json:"id" gorm:"primaryKey"`
 	Username  string              `json:"username" gorm:"uniqueIndex"`
 	Password  string              `json:"password"`
 	FirstName string              `json:"first" gorm:"index"`
@@ -31,19 +33,33 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 		return err
 	}
 
-	user := User{ID: internal.GenerateUUID(), Username: username, Password: password, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	user := User{ID: internal.GenerateUUID(), Username: username, Password: hashedPassword, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
 	err = postgresmanager.Save(&user)
 
 	return err
 }
 
-func GetUser(id string) (User, error) {
+func GetUser(username, password string) (User, error) {
 	var user User
 	var machines []*machines.Machine
 
-	if err := postgresmanager.Query(User{ID: id}, &user); err != nil {
+	err := postgresmanager.Query(&User{Username: username}, &user)
+	if err != nil {
 		return User{}, err
-	} else if err := postgresmanager.ReadAssociation(&user, "Machines", &machines); err != nil {
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return User{}, err
+	}
+
+	err = postgresmanager.ReadAssociation(&user, "Machines", &machines)
+	if err != nil {
 		return User{}, err
 	}
 
