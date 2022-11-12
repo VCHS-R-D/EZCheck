@@ -1,11 +1,13 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Init() {
+func Init(port string) {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -30,5 +32,5 @@ func Init() {
 	gUser.POST("/get", GetUser)
 	gUser.DELETE("/delete", DeleteUser)
 
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }
