@@ -69,33 +69,33 @@ func GetUser(username, password string) (User, error) {
 	return user, nil
 }
 
-func AuthenticateUser(code, machineID string) string {
+func AuthenticateUser(code, machineID string) (string, error) {
 	var user *User
 
-	if postgresmanager.Query(&User{Code: code}, &user) != nil {
-		return "{\"error\": \"user not found\"}"
+	if err := postgresmanager.Query(&User{Code: code}, &user); err != nil {
+		return "{\"error\": \"user not found\"}", err
 	}
 
 	var machines []*machines.Machine
 	err := postgresmanager.ReadAssociation(&user, "Machines", &machines)
 
 	if err != nil {
-		return "{\"error\": \"could not read user's machines\"}"
+		return "{\"error\": \"could not read user's machines\"}", nil
 	}
 
 	for _, machine := range machines {
 		if machine.ID == machineID {
 			actions, err := machine.SignIn()
 			if err != nil {
-				return "{\"error\": \"could not sign in\"}"
+				return "{\"error\": \"could not sign in\"}", nil
 			}
 			log.Log(fmt.Sprintf("%s signed in to machine %s", user.Username, machine.Name))
-			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions)
+			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions), nil
 		}
 	}
 
 	log.Log(fmt.Sprintf("%s tried to sign in to machine %s", user.Username, machineID))
-	return "{\"authorized\": false}"
+	return "{\"authorized\": false}", nil
 }
 
 func DeleteUser(id string) error {

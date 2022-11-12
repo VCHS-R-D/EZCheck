@@ -108,26 +108,26 @@ func SearchUsers(query map[string]interface{}) []User {
 	return users
 }
 
-func AuthenticateAdmin(code, machineID string) string {
+func AuthenticateAdmin(code, machineID string) (string, error) {
 	var admin *Admin
 
-	if postgresmanager.Query(&Admin{Code: code}, &admin) != nil {
-		return "{\"error\": \"admin not found\"}"
+	if err := postgresmanager.Query(&Admin{Code: code}, &admin); err != nil {
+		return "{\"error\": \"admin not found\"}", err
 	}
 
 	var machine *machines.Machine
-	if postgresmanager.Query(&machines.Machine{ID: machineID}, &machine) != nil {
-		return "{\"error\": \"machine not found\"}"
+	if err := postgresmanager.Query(&machines.Machine{ID: machineID}, &machine); err != nil {
+		return "{\"error\": \"machine not found\"}", nil
 	}
 
 	actions, err := machine.SignIn()
 	if err != nil {
 		log.Log(fmt.Sprintf("%s failed to sign in to machine %s", admin.Username, machineID))
-		return "{\"error\": \"could not sign in\"}"
+		return "{\"error\": \"could not sign in\"}", nil
 	}
 
 	log.Log(fmt.Sprintf("%s signed in to machine %s", admin.Username, machine.Name))
-	return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", admin.FirstName, admin.LastName, actions)
+	return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", admin.FirstName, admin.LastName, actions), nil
 }
 
 func DeleteAdmin(id string) error {
