@@ -3,6 +3,7 @@ package log
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 func Log(message string) error {
@@ -19,7 +20,7 @@ func Log(message string) error {
 		return err
 	}
 	
-	_, err = fmt.Fprintln(f, message)
+	_, err = fmt.Fprintln(f, time.Now().Local().Format("2006-01-02 15:04:05") + " " + message)
 	if err != nil {
 		fmt.Println(err)
 		return err
