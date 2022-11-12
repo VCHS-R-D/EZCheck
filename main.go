@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"main/components/machines"
 	"main/components/postgresmanager"
+	"main/components/users"
 	"main/server"
 )
 
@@ -16,7 +18,25 @@ func main() {
 	serverPtr := flag.String("port", "8080", "port")
 	flag.Parse()
 
-	postgresmanager.Open(*dhostPtr, *dbnamePtr, *dbportPtr, *dbuserPtr, *dbpassPtr)
+	err := postgresmanager.Open(*dhostPtr, *dbnamePtr, *dbportPtr, *dbuserPtr, *dbpassPtr)
+	if err != nil {
+		panic(err)
+	}
+
+	err = postgresmanager.AutoCreateStruct(users.Admin{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = postgresmanager.AutoCreateStruct(users.User{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = postgresmanager.AutoCreateStruct(machines.Machine{})
+	if err != nil {
+		panic(err)
+	}
 
 	server.Init(*serverPtr)
 }
