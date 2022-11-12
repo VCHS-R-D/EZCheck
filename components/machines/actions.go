@@ -1,31 +1,43 @@
 package machines
 
-import "main/components/postgresmanager"
+import (
+	"main/components/postgresmanager"
+	"strconv"
+)
 
 type Action struct {
 	ID int `json:"action_id"`
 }
 
-func AddAction(id string, actionInt ...int) error {
-	machine := Machine{ID: id}
+func AddAction(machineID string, actionID string) error {
+	machine := Machine{ID: machineID}
 	err := postgresmanager.Query(&machine, &machine)
 	if err != nil {
 		return err
 	}
 
-	for _, action := range actionInt {
-		machine.Actions = append(machine.Actions, Action{ID: action})
+	actionInt, err := strconv.Atoi(actionID)
+	if err != nil {
+		return err
 	}
-	
+
+	machine.Actions = append(machine.Actions, Action{ID: actionInt})
+
 	return postgresmanager.Update(machine, &machine)
 }
 
-func DeleteAction(id string, actionInt int) error {
-	machine := Machine{ID: id}
+func DeleteAction(machineID string, actionID string) error {
+	machine := Machine{ID: machineID}
 	err := postgresmanager.Query(&machine, &machine)
 	if err != nil {
 		return err
 	}
+
+	actionInt, err := strconv.Atoi(actionID)
+	if err != nil {
+		return err
+	}
+
 	for i, action := range machine.Actions {
 		if action.ID == actionInt {
 			machine.Actions = append(machine.Actions[:i], machine.Actions[i+1:]...)

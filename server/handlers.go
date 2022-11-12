@@ -1,6 +1,7 @@
 package server
 
 import (
+	"main/components/log"
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"main/components/users"
@@ -210,4 +211,35 @@ func Authenticate(c echo.Context) error {
 
 	return c.JSON(200, output)
 }
+
+func ReadLog(c echo.Context) error {
+	log, err := log.Read()
+	if err != nil {
+		return c.JSON(400, err)
+	}
+	return c.JSON(200, log)
+}
+
+func AddAction(c echo.Context) error {
+	machineID := c.FormValue("machineID")
+	actionInt := c.FormValue("actionInt")
+
+	if err := machines.AddAction(machineID, actionInt); err != nil {
+		return c.JSON(400, err)
+	}
+
+	return c.JSON(200, "success")
+}
+
+func DeleteAction(c echo.Context) error {
+	machineID := c.FormValue("machineID")
+	actionInt := c.FormValue("actionInt")
+
+	if err := machines.DeleteAction(machineID, actionInt); err != nil {
+		return c.JSON(400, err)
+	}
+
+	return c.JSON(200, "success")
+}
+
 	
