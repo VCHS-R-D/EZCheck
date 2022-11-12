@@ -177,8 +177,26 @@ func DeleteMachine(c echo.Context) error {
 }
 
 func Authenticate(c echo.Context) error {
-	code := c.FormValue("code")
-	machineID := c.FormValue("machineID")
+	
+	m := echo.Map{}
+	if err := c.Bind(&m); err != nil {
+		return c.JSON(400, err)
+	}
+
+	var code string
+	var machineID string
+
+	if code, ok := m["code"]; ok {
+		code = code.(string)
+	} else {
+		return c.JSON(400, "code not found")
+	}
+
+	if machineID, ok := m["machineID"]; ok {
+		machineID = machineID.(string)
+	} else {
+		return c.JSON(400, "machineID not found")
+	}
 
 	output, err := users.AuthenticateUser(code, machineID)
 
