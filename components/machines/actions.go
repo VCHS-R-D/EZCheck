@@ -6,7 +6,7 @@ import (
 )
 
 type Action struct {
-	ID int `json:"action_id"`
+	ActionID int `json:"action_id"`
 }
 
 func AddAction(machineID string, actionID string) error {
@@ -21,7 +21,7 @@ func AddAction(machineID string, actionID string) error {
 		return err
 	}
 
-	machine.Actions = append(machine.Actions, Action{ID: actionInt})
+	machine.Actions = append(machine.Actions, Action{ActionID: actionInt})
 
 	return postgresmanager.Update(machine, &machine)
 }
@@ -39,7 +39,7 @@ func DeleteAction(machineID string, actionID string) error {
 	}
 
 	for i, action := range machine.Actions {
-		if action.ID == actionInt {
+		if action.ActionID == actionInt {
 			machine.Actions = append(machine.Actions[:i], machine.Actions[i+1:]...)
 			break
 		}

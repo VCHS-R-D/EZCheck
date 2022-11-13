@@ -12,7 +12,7 @@ type Machine struct {
 	ID        string    `json:"id" gorm:"primaryKey"`
 	Name      string    `json:"name" gorm:"uniqueIndex"`
 	InUSE     bool      `json:"in_use" gorm:"index"`
-	Actions   []Action  `json:"actions"`
+	Actions   []Action  `json:"actions" gorm:"foreignKey:ActionID"`
 	CreatedAt time.Time `json:"-" gorm:"index"`
 	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
