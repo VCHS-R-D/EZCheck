@@ -157,7 +157,7 @@ func CreateMachine(c echo.Context) error {
 
 func GetMachines(c echo.Context) error {
 	machines := machines.ReadMachines()
-	
+
 	return c.JSON(200, machines)
 }
 
@@ -178,7 +178,7 @@ func DeleteMachine(c echo.Context) error {
 }
 
 func Authenticate(c echo.Context) error {
-	
+
 	m := echo.Map{}
 	if err := c.Bind(&m); err != nil {
 		return c.JSON(400, err)
@@ -241,5 +241,3 @@ func DeleteAction(c echo.Context) error {
 
 	return c.JSON(200, "success")
 }
-
-	

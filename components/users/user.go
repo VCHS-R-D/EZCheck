@@ -57,7 +57,7 @@ func GetUser(username, password string) (User, error) {
 	if err != nil {
 		return User{}, err
 	}
-	
+
 	user.Password = ""
 
 	err = postgresmanager.ReadAssociation(&user, "Machines", &machines)
