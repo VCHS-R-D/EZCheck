@@ -29,8 +29,10 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	var u *User
 	err := postgresmanager.Query(&User{Code: code}, &u)
 
-	if err.Error() != "record not found" {
-		return err
+	if err != nil {
+		if err.Error() != "record not found" {
+			return err
+		}
 	}
 
 	hashedPassword, err := HashPassword(password)
