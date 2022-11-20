@@ -78,7 +78,7 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 		}
 	}
 
-	return false, c.JSON(400, "Invalid username or password")
+	return false, c.String(400, "Invalid username or password")
 }
 
 func CreateUser(c echo.Context) error {
@@ -115,7 +115,7 @@ func UserAuth(username, password string, c echo.Context) (bool, error) {
 		}
 	}
 
-	return false, c.JSON(400, "Invalid username or password")
+	return false, c.String(400, "Invalid username or password")
 }
 
 func CheckPasswordHash(password, hash string) bool {
