@@ -7,8 +7,6 @@ import (
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"time"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -46,16 +44,13 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	return err
 }
 
-func GetUser(username, password string) (User, error) {
+func GetUser(id string) (User, error) {
+
 	var user User
 	var machines []*machines.Machine
 
-	err := postgresmanager.Query(&User{Username: username}, &user)
-	if err != nil {
-		return User{}, err
-	}
+	err := postgresmanager.Query(&User{ID: id}, &user)
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return User{}, err
 	}

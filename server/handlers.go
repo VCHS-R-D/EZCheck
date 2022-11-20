@@ -24,18 +24,6 @@ func CreateAdmin(c echo.Context) error {
 	return c.JSON(200, "success")
 }
 
-func GetAdmin(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-
-	admin, err := users.GetAdmin(username, password)
-	if err != nil {
-		return c.JSON(400, err)
-	}
-
-	return c.JSON(200, admin)
-}
-
 func CertifyUser(c echo.Context) error {
 	userID := c.FormValue("userID")
 	machineID := c.FormValue("machineID")
@@ -82,14 +70,15 @@ func DeleteAdmin(c echo.Context) error {
 func AdminAuth(username, password string, c echo.Context) (bool, error) {
 	var admin users.Admin
 	if err := postgresmanager.Query(users.Admin{Username: username}, &admin); err != nil {
-		return false, nil
+		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, admin.Password) {
-			return true, nil
+			admin, _ = users.GetAdmin(admin.ID)
+			return true, c.JSON(200, admin)
 		}
 	}
 
-	return false, nil
+	return false, c.JSON(400, "Invalid username or password")
 }
 
 func CreateUser(c echo.Context) error {
@@ -107,18 +96,6 @@ func CreateUser(c echo.Context) error {
 	return c.JSON(200, "success")
 }
 
-func GetUser(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-
-	user, err := users.GetUser(username, password)
-	if err != nil {
-		return c.JSON(400, err)
-	}
-
-	return c.JSON(200, user)
-}
-
 func DeleteUser(c echo.Context) error {
 	if err := users.DeleteUser(c.FormValue("id")); err != nil {
 		return c.JSON(400, err)
@@ -130,14 +107,15 @@ func DeleteUser(c echo.Context) error {
 func UserAuth(username, password string, c echo.Context) (bool, error) {
 	var user users.User
 	if err := postgresmanager.Query(users.User{Username: username}, &user); err != nil {
-		return false, nil
+		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, user.Password) {
-			return true, nil
+			user, _ = users.GetUser(user.ID)
+			return true, c.JSON(200, user)
 		}
 	}
 
-	return false, nil
+	return false, c.JSON(400, "Invalid username or password")
 }
 
 func CheckPasswordHash(password, hash string) bool {

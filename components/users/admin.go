@@ -43,14 +43,10 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 	return err
 }
 
-func GetAdmin(username, password string) (Admin, error) {
+func GetAdmin(id string) (Admin, error) {
 	var admin Admin
-	err := postgresmanager.Query(&Admin{Username: username}, &admin)
-	if err != nil {
-		return Admin{}, err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(password))
+	
+	err := postgresmanager.Query(&Admin{ID: id}, &admin)
 	if err != nil {
 		return Admin{}, err
 	}
