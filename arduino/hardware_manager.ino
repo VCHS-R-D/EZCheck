@@ -1,14 +1,11 @@
 // arduino json
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <ArduinoJson.h>
+#include <Keypad.h>
+#include <LiquidCrystal.h>
 
 #define BUTTON_PIN 2
 #define LED_PIN 3
-#include <Keypad.h>
-
-#include <LiquidCrystal.h>
-
 //Keypad vars
 const int ROW_NUM = 4; //four rows
 const int COLUMN_NUM = 4; //four columns
