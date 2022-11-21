@@ -79,7 +79,7 @@ void loop() {
                 
                 http.addHeader("Content-Type", "application/x-www-form-urlencoded");
                 
-                String httpRequestDataJSON = "{/"code/": /"" + keypad_buffer + "/"}";           
+                String httpRequestDataJSON = "{\"code\": " + keypad_buffer + "\"}";;           
 
                 int httpResponseCode = http.POST(httpRequestDataJSON);
                 
