@@ -65,11 +65,14 @@ void setup() {
 
 void loop() {
     char key = keypad.getKey();
+    String lcd_input = "";
     if (key) {
         if key == 'D' && keypad_buffer.length() > 0 {
             keypad_buffer.remove(keypad_buffer.length() - 1);
+            lcd.print(lcd_input.remove(lcd_input.length() - 1));
         } else {
             keypad_buffer.concat(key);
+            lcd.print(lcd_input.concat("*"));
 
             if(keypad_buffer.length() == 6) {
                 WiFiClient client;
@@ -88,6 +91,8 @@ void loop() {
                 
                 // Free resources
                 http.end();
+
+                lcd.clear();
             }
         }
     }
