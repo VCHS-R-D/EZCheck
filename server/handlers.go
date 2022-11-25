@@ -80,6 +80,14 @@ func SearchAdmins(c echo.Context) error {
 	return c.JSON(200, "success")
 }
 
+func GetAdmin(c echo.Context) error {
+	admin, err := users.GetAdmin(c.FormValue("id"))
+	if err != nil {
+		return c.JSON(400, err)
+	}
+	return c.JSON(200, admin)
+}
+
 func DeleteAdmin(c echo.Context) error {
 	if err := users.DeleteAdmin(c.FormValue("id")); err != nil {
 		return c.JSON(400, err)
@@ -94,8 +102,7 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, admin.Password) {
-			admin, _ = users.GetAdmin(admin.ID)
-			return true, c.JSON(200, admin)
+			return true, c.String(200, admin.ID)
 		}
 	}
 
@@ -117,6 +124,14 @@ func CreateUser(c echo.Context) error {
 	return c.JSON(200, "success")
 }
 
+func GetUser(c echo.Context) error {
+	user, err := users.GetUser(c.FormValue("id"))
+	if err != nil {
+		return c.JSON(400, err)
+	}
+	return c.JSON(200, user)
+}
+
 func DeleteUser(c echo.Context) error {
 	if err := users.DeleteUser(c.FormValue("id")); err != nil {
 		return c.JSON(400, err)
@@ -131,8 +146,7 @@ func UserAuth(username, password string, c echo.Context) (bool, error) {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, user.Password) {
-			user, _ = users.GetUser(user.ID)
-			return true, c.JSON(200, user)
+			return true, c.String(200, user.ID)
 		}
 	}
 
