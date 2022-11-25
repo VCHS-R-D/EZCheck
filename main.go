@@ -6,6 +6,7 @@ import (
 	"main/components/postgresmanager"
 	"main/components/users"
 	"main/server"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -34,6 +35,11 @@ func main() {
 	}
 
 	err = postgresmanager.AutoCreateStruct(machines.Machine{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = godotenv.Load("variables.env")
 	if err != nil {
 		panic(err)
 	}
