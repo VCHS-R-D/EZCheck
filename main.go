@@ -12,7 +12,16 @@ import (
 
 func main() {
 
-	err := postgresmanager.Open(os.Getenv("DB_HOST"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"))
+	err := godotenv.Load("variables.env")
+	if err != nil {
+		panic(err)
+	}
+
+	if os.Getenv("ADMIN_PASS") == "" {
+		panic("ADMIN_PASS environment variable is not set")
+	}
+
+	err = postgresmanager.Open(os.Getenv("DB_HOST"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"))
 	if err != nil {
 		panic(err)
 	}
@@ -30,15 +39,6 @@ func main() {
 	err = postgresmanager.AutoCreateStruct(machines.Machine{})
 	if err != nil {
 		panic(err)
-	}
-
-	err = godotenv.Load("variables.env")
-	if err != nil {
-		panic(err)
-	}
-
-	if os.Getenv("ADMIN_PASS") == "" {
-		panic("ADMIN_PASS environment variable is not set")
 	}
 
 	server.Init(os.Getenv("HTTP_PORT"))
