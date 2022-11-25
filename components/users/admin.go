@@ -55,42 +55,52 @@ func GetAdmin(id string) (Admin, error) {
 	return admin, nil
 }
 
-func CertifyUser(userID, machineID string) error {
+func CertifyUser(adminID, userID, machineID string) error {
 	var user *User
+	var admin *Admin
 	var machine *machines.Machine
 	err := postgresmanager.Query(User{ID: userID}, &user)
 	if err != nil {
 		return err
 	}
 
-	err = postgresmanager.Query(machines.Machine{ID: machineID}, &machine)
+	err = postgresmanager.Query(Admin{ID: adminID}, &admin)
+	if err != nil {
+		return err
+	}
 
+	err = postgresmanager.Query(machines.Machine{ID: machineID}, &machine)
 	if err != nil {
 		return err
 	}
 
 	err = postgresmanager.CreateAssociation(&user, "Machines", machine)
-	log.Log(fmt.Sprintf("Authorized user %s to machine %s", user.Username, machine.Name))
+	log.Log(fmt.Sprintf("%s authorized user %s to use machine %s", admin.Username, user.Username, machine.Name))
 
 	return err
 }
 
-func UncertifyUser(userID, machineID string) error {
+func UncertifyUser(adminID, userID, machineID string) error {
 	var user *User
+	var admin *Admin
 	var machine *machines.Machine
 	err := postgresmanager.Query(User{ID: userID}, &user)
 	if err != nil {
 		return err
 	}
 
-	err = postgresmanager.Query(machines.Machine{ID: machineID}, &machine)
+	err = postgresmanager.Query(Admin{ID: adminID}, &admin)
+	if err != nil {
+		return err
+	}
 
+	err = postgresmanager.Query(machines.Machine{ID: machineID}, &machine)
 	if err != nil {
 		return err
 	}
 
 	err = postgresmanager.DeleteAssociation(&user, "Machines", machine)
-	log.Log(fmt.Sprintf("Unauthorized user %s to machine %s", user.Username, machine.Name))
+	log.Log(fmt.Sprintf("%s deauthorized user %s to use machine %s", admin.Username, user.Username, machine.Name))
 
 	return err
 }
@@ -102,6 +112,15 @@ func SearchUsers(query map[string]interface{}) []User {
 		u.Password = ""
 	}
 	return users
+}
+
+func SearchAdmins(query map[string]interface{}) []Admin {
+	var admins []Admin
+	postgresmanager.GroupQuery(query, &admins)
+	for _, a := range admins {
+		a.Password = ""
+	}
+	return admins
 }
 
 func AuthenticateAdmin(code, machineID string) (string, error) {
