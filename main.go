@@ -6,6 +6,8 @@ import (
 	"main/components/postgresmanager"
 	"main/components/users"
 	"main/server"
+	"os"
+
 	"github.com/joho/godotenv"
 )
 
@@ -42,6 +44,10 @@ func main() {
 	err = godotenv.Load("variables.env")
 	if err != nil {
 		panic(err)
+	}
+
+	if os.Getenv("ADMIN_PASS") == "" {
+		panic("ADMIN_PASS environment variable is not set")
 	}
 
 	server.Init(*serverPtr)
