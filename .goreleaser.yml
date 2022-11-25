@@ -1,4 +1,6 @@
-# .goreleaser.yml
+archives:
+- files:
+  - variables.env
 builds:
   - goos:
       - darwin
