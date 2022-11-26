@@ -34,8 +34,9 @@ func Init(port string) {
 	e.POST("/user/create", CreateUser)
 
 	// GET LIST OF ALL MACHINES
-	e.POST("/machines", GetMachines)
+	e.GET("/machines", GetMachines)
 
+	//ADMIN GROUP APIs
 	gAdmin := e.Group("/admin", middleware.BasicAuth(AdminAuth))
 	gAdmin.POST("/get", GetAdmin)
 	gAdmin.POST("/certify", CertifyUser)
@@ -49,6 +50,7 @@ func Init(port string) {
 	gAdmin.POST("/machines/actions/add", AddAction)
 	gAdmin.POST("/machines/actions/delete", DeleteAction)
 
+	//USER GROUP APIs
 	gUser := e.Group("/user", middleware.BasicAuth(UserAuth))
 	gUser.POST("/get", GetUser)
 	gUser.DELETE("/delete", DeleteUser)
