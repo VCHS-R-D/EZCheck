@@ -48,7 +48,7 @@ func Init(port string) {
 	gAdmin.POST("/machines/create", CreateMachine)
 	gAdmin.DELETE("/machines/delete", DeleteMachine)
 	gAdmin.POST("/machines/actions/add", AddAction)
-	gAdmin.POST("/machines/actions/delete", DeleteAction)
+	gAdmin.DELETE("/machines/actions/delete", DeleteAction)
 
 	//USER GROUP APIs
 	gUser := e.Group("/user", middleware.BasicAuth(UserAuth))
