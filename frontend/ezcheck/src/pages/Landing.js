@@ -29,6 +29,7 @@ export default function Landing() {
     const [lastName, setLastName] = React.useState("");
     const [code, setCode] = React.useState("");
     const [grade, setGrade] = React.useState("");
+    const [adminCode, setAdminCode] = React.useState("");
     const navigate = useNavigate();
     const [cookie, setCookie] = useCookies('user');
 
@@ -98,6 +99,7 @@ export default function Landing() {
         formdata.append("first", firstName);
         formdata.append("last", lastName);
         formdata.append("code", code);
+        formdata.append("adminPass", adminCode);
         var config = {
         method: 'post',
         url: 'http://localhost:8080/admin/create',
@@ -141,6 +143,7 @@ export default function Landing() {
                                 <input placeholder="first name" onChange={(event) => {setFirstName(event.target.value)}}></input>
                                 <input placeholder="last name" onChange={(event) => {setLastName(event.target.value)}}></input>
                                 <input placeholder="code" onChange={(event) => {setCode(event.target.value)}}></input>
+                                <input placeholder="admin code" onChange={(event) => {setAdminCode(event.target.value)}}></input>
                             </form>
                             <button onClick={handleAdminCreate}>Submit</button>
                         </span>
