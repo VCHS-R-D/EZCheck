@@ -1,7 +1,7 @@
 import React from 'react'
 import Modal from 'react-modal';
 import MachineList from '../components/MachineList';
-import Search from '../components/Search';
+import Search from '../components/Search.js';
 
 const customStyles = {
     content: {
@@ -16,21 +16,8 @@ const customStyles = {
 
 
 export default function Admin() {
-    const [modalIsOpen, setIsOpen] = React.useState(false);
+    const [show, setShow] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState("");
-
-    function openModal() {
-        setIsOpen(true);
-    }
-
-    function closeModal() {
-        setIsOpen(false);
-    }
-
-    function search(){
-        openModal();
-    }
-
     function viewMachines(){
         setCurrentPage("machines");
         renderPages();
@@ -58,18 +45,11 @@ export default function Admin() {
     
     return(
         <div>
-            <button onClick={search}>Search</button>
+            <button onClick={() => setShow(true)}>Search</button>
+            <Search show={show} onHide={() => setShow(false)} />
             <button onClick={viewMachines}>Machines</button>
             <button>Logs</button>
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
-                style={customStyles}
-                contentLabel="Example Modal"
-            >
-                <button onClick={closeModal}>close</button>
-                <h1><Search/></h1>
-            </Modal>
+            
             {renderPages()}
         </div>
     )
