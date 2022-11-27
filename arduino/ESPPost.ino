@@ -37,12 +37,10 @@ void loop() {
       //send post request
       WiFiClient client;
       HTTPClient http;
-    
       http.begin(client, authPath);
-      
       http.addHeader("Content-Type", "application/json");
       int httpResponseCode = http.POST("{\"code\":\""+pin+"\",\"machineID\":\""+machineID+"\"}");
-     
+      //handle response
       if (httpResponseCode>0) {
         Serial.print("HTTP Response code: ");
         Serial.println(httpResponseCode);
@@ -53,7 +51,6 @@ void loop() {
         Serial.print("Error code: ");
         Serial.println(httpResponseCode);
       }
-        
       // Free resources
       http.end();
     }
