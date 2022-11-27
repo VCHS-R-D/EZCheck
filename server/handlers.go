@@ -102,7 +102,7 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, admin.Password) {
-			return true, c.String(200, admin.ID)
+			return true, nil
 		}
 	}
 
@@ -146,7 +146,7 @@ func UserAuth(username, password string, c echo.Context) (bool, error) {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, user.Password) {
-			return true, c.String(200, user.ID)
+			return true, nil
 		}
 	}
 
