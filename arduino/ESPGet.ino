@@ -6,7 +6,7 @@ const char* ssid = "";
 const char* password = "";
 
 //path
-String path = "http://192.168.1.208:8000/machines";
+String path = "http://192.168.1.208:8080/machines";
 
 //upd
 unsigned long lastTime = 0;
