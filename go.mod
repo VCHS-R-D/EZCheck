@@ -3,6 +3,7 @@ module main
 go 1.18
 
 require (
+	github.com/joho/godotenv v1.4.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/crypto v0.2.0
