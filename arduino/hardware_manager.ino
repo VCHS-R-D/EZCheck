@@ -71,7 +71,7 @@ void loop() {
                 http.begin(client, authPath);
                 http.addHeader("Content-Type", "application/json");
 
-                int httpResponseCode = http.POST("{\"code\":\""+pin+"\",\"machineID\":\""+machineID+"\"}");
+                int httpResponseCode = http.POST("{\"code\":\""+keypad_buffer+"\",\"machineID\":\""+machineID+"\"}");
                 //handle response
                 if (httpResponseCode>0) {
                     Serial.print("HTTP Response code: ");
@@ -87,7 +87,9 @@ void loop() {
                 // Free resources
                 http.end();
 
+                // clear hardware resources
                 lcd.clear();
+                keypad_buffer.remove(0);
             }
         }
     }
