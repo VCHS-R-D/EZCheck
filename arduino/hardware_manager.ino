@@ -25,44 +25,38 @@ Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_
 //LCD vars
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-const char* PASSWORD = "***REMOVED***";
-const char* URL = "http://:8000";
 const int LENGTH = 6;
 
 String keypad_buffer;
 
-HTTPClient arduino_client;
-WiFiClient wifi_client;
+//pass
+const char* ssid = "";
+const char* password = "";
+
+//server endpoints
+String path = "http://192.168.1.208:8080/";
+String authPath = server+"/auth";
+String machineID = "laser_cutter";
 
 void setup() {
     keypad_buffer = "";
     // light protoype with LED
     setMode(LED_PIN, OUTPUT);
-    setMode(BUTTON_PIN, INPUT);
+    Serial.begin(115200);
+    WiFi.begin(ssid, password);
+    Serial.println("Connecting");
 
-    arduino_client.begin()
+    while(WiFi.status() != WL_CONNECTED) {}
 
-    Serial.begin(9600); 
-    try {
-        WiFi.begin(ssid, password);
-        Serial.println("Connecting");
-        if (Wifi.status == WL_CONNECT_FAILED) throw("Connect Failed");
-    } catch (string error) {
-        Serial.println("Connection issue", error);
-        while(1);
-    }
-
+    Serial.println("");
     Serial.print("Connected to WiFi network with IP Address: ");
     Serial.println(WiFi.localIP());
-    
-    Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
 }
-
 
 void loop() {
     char key = keypad.getKey();
     String lcd_input = "";
+
     if (key) {
         if key == 'D' && keypad_buffer.length() > 0 {
             keypad_buffer.remove(keypad_buffer.length() - 1);
@@ -71,21 +65,25 @@ void loop() {
             keypad_buffer.concat(key);
             lcd.print(lcd_input.concat("*"));
 
-            if(keypad_buffer.length() == 6) {
+            if(keypad_buffer.length() == 6 && WiFi.status() == WL_CONNECTED) {
                 WiFiClient client;
                 HTTPClient http;
+                http.begin(client, authPath);
+                http.addHeader("Content-Type", "application/json");
 
-                http.begin(client, URL);
-                
-                http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-                
-                String httpRequestDataJSON = "{\"code\": " + keypad_buffer + "\"}";;           
+                int httpResponseCode = http.POST("{\"code\":\""+pin+"\",\"machineID\":\""+machineID+"\"}");
+                //handle response
+                if (httpResponseCode>0) {
+                    Serial.print("HTTP Response code: ");
+                    Serial.println(httpResponseCode);
+                    String payload = http.getString();
+                    Serial.println(payload);
+                }
+                else {
+                    Serial.print("Error code: ");
+                    Serial.println(httpResponseCode);
+                }
 
-                int httpResponseCode = http.POST(httpRequestDataJSON);
-                
-                Serial.print("HTTP Response code: ");
-                Serial.println(httpResponseCode);
-                
                 // Free resources
                 http.end();
 
