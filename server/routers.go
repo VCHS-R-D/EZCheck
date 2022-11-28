@@ -34,19 +34,25 @@ func Init(port string) {
 	e.POST("/user/create", CreateUser)
 
 	// GET LIST OF ALL MACHINES
-	e.POST("/machines", GetMachines)
+	e.GET("/machines", GetMachines)
 
+	//ADMIN GROUP APIs
 	gAdmin := e.Group("/admin", middleware.BasicAuth(AdminAuth))
+	gAdmin.POST("/get", GetAdmin)
 	gAdmin.POST("/certify", CertifyUser)
 	gAdmin.POST("/uncertify", UncertifyUser)
-	gAdmin.POST("/search", SearchUsers)
-	gAdmin.DELETE("/delete", DeleteAdmin)
+	gAdmin.POST("/search/users", SearchUsers)
+	gAdmin.POST("/search/admins", SearchAdmins)
+	gAdmin.DELETE("/delete/admin", DeleteAdmin)
+	gAdmin.DELETE("/delete/user", DeleteUser)
 	gAdmin.POST("/machines/create", CreateMachine)
 	gAdmin.DELETE("/machines/delete", DeleteMachine)
 	gAdmin.POST("/machines/actions/add", AddAction)
-	gAdmin.POST("/machines/actions/delete", DeleteAction)
+	gAdmin.DELETE("/machines/actions/delete", DeleteAction)
 
+	//USER GROUP APIs
 	gUser := e.Group("/user", middleware.BasicAuth(UserAuth))
+	gUser.POST("/get", GetUser)
 	gUser.DELETE("/delete", DeleteUser)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))

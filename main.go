@@ -1,24 +1,27 @@
 package main
 
 import (
-	"flag"
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"main/components/users"
 	"main/server"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	dhostPtr := flag.String("dbhost", "localhost", "host")
-	dbnamePtr := flag.String("dbname", "postgres", "name")
-	dbportPtr := flag.String("dbport", "5432", "port")
-	dbuserPtr := flag.String("dbuser", "postgres", "user")
-	dbpassPtr := flag.String("dbpassword", "password", "password")
-	serverPtr := flag.String("port", "8080", "port")
-	flag.Parse()
+	err := godotenv.Load("variables.env")
+	if err != nil {
+		panic(err)
+	}
 
-	err := postgresmanager.Open(*dhostPtr, *dbnamePtr, *dbportPtr, *dbuserPtr, *dbpassPtr)
+	if os.Getenv("ADMIN_PASS") == "" {
+		panic("ADMIN_PASS environment variable is not set")
+	}
+
+	err = postgresmanager.Open(os.Getenv("DB_HOST"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"))
 	if err != nil {
 		panic(err)
 	}
@@ -38,5 +41,5 @@ func main() {
 		panic(err)
 	}
 
-	server.Init(*serverPtr)
+	server.Init(os.Getenv("HTTP_PORT"))
 }

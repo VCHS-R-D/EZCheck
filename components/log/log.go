@@ -1,6 +1,7 @@
 package log
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"time"
@@ -8,36 +9,83 @@ import (
 
 func Log(message string) error {
 
-	if _, err := os.Stat("log.txt"); os.IsNotExist(err) {
-		_, err := os.Create("log.txt")
+	if _, err := os.Stat("ezcheck-log.txt"); os.IsNotExist(err) {
+		_, err := os.Create("ezcheck-log.txt")
 		if err != nil {
 			return err
 		}
 	}
 
-	f, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
+	err := NewRecord("ezcheck-log.txt").Prepend(time.Now().Local().Format("01-02-2006 15:04:05")+" "+message)
 	
-	_, err = fmt.Fprintln(f, time.Now().Local().Format("2006-01-02 15:04:05") + " " + message)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	err = f.Close()
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	return nil
+	return err
 }
 
 func Read() (string, error) {
-	data, err := os.ReadFile("log.txt")
+	data, err := os.ReadFile("ezcheck-log.txt")
 	if err != nil {
 		return "", err
 	}
 	return string(data), nil
+}
+
+type Record struct {
+	Filename string
+	Contents []string
+}
+
+func NewRecord(filename string) *Record {
+	return &Record{
+		Filename: filename,
+		Contents: make([]string, 0),
+	}
+}
+
+func (r *Record) readLines() error {
+	if _, err := os.Stat(r.Filename); err != nil {
+		return nil
+	}
+
+	f, err := os.OpenFile(r.Filename, os.O_RDONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		if tmp := scanner.Text(); len(tmp) != 0 {
+			r.Contents = append(r.Contents, tmp)
+		}
+	}
+
+	return nil
+}
+
+func (r *Record) Prepend(content string) error {
+	err := r.readLines()
+	if err != nil {
+		return err
+	}
+
+	f, err := os.OpenFile(r.Filename, os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	writer := bufio.NewWriter(f)
+	writer.WriteString(fmt.Sprintf("%s\n", content))
+	for _, line := range r.Contents {
+		_, err := writer.WriteString(fmt.Sprintf("%s\n", line))
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := writer.Flush(); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"main/components/machines"
 	"main/components/postgresmanager"
 	"main/components/users"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -16,6 +17,11 @@ func CreateAdmin(c echo.Context) error {
 	firstName := c.FormValue("first")
 	lastName := c.FormValue("last")
 	code := c.FormValue("code")
+	adminPass := c.FormValue("adminPass")
+
+	if adminPass != os.Getenv("ADMIN_PASS") {
+		return c.JSON(400, "Invalid admin password")
+	}
 
 	if err := users.CreateAdmin(username, password, firstName, lastName, code); err != nil {
 		return c.JSON(400, err)
@@ -25,10 +31,11 @@ func CreateAdmin(c echo.Context) error {
 }
 
 func CertifyUser(c echo.Context) error {
+	adminID := c.FormValue("adminID")
 	userID := c.FormValue("userID")
 	machineID := c.FormValue("machineID")
 
-	if err := users.CertifyUser(userID, machineID); err != nil {
+	if err := users.CertifyUser(adminID, userID, machineID); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -36,10 +43,11 @@ func CertifyUser(c echo.Context) error {
 }
 
 func UncertifyUser(c echo.Context) error {
+	adminID := c.FormValue("adminID")
 	userID := c.FormValue("userID")
 	machineID := c.FormValue("machineID")
 
-	if err := users.UncertifyUser(userID, machineID); err != nil {
+	if err := users.UncertifyUser(adminID, userID, machineID); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -59,6 +67,27 @@ func SearchUsers(c echo.Context) error {
 	return c.JSON(200, "success")
 }
 
+func SearchAdmins(c echo.Context) error {
+	m := echo.Map{}
+	if err := c.Bind(&m); err != nil {
+		return c.JSON(400, err)
+	}
+
+	if err := users.SearchAdmins(m); err != nil {
+		return c.JSON(400, err)
+	}
+
+	return c.JSON(200, "success")
+}
+
+func GetAdmin(c echo.Context) error {
+	admin, err := users.GetAdmin(c.FormValue("id"))
+	if err != nil {
+		return c.JSON(400, err)
+	}
+	return c.JSON(200, admin)
+}
+
 func DeleteAdmin(c echo.Context) error {
 	if err := users.DeleteAdmin(c.FormValue("id")); err != nil {
 		return c.JSON(400, err)
@@ -73,8 +102,7 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, admin.Password) {
-			admin, _ = users.GetAdmin(admin.ID)
-			return true, c.JSON(200, admin)
+			return true, nil
 		}
 	}
 
@@ -96,6 +124,14 @@ func CreateUser(c echo.Context) error {
 	return c.JSON(200, "success")
 }
 
+func GetUser(c echo.Context) error {
+	user, err := users.GetUser(c.FormValue("id"))
+	if err != nil {
+		return c.JSON(400, err)
+	}
+	return c.JSON(200, user)
+}
+
 func DeleteUser(c echo.Context) error {
 	if err := users.DeleteUser(c.FormValue("id")); err != nil {
 		return c.JSON(400, err)
@@ -110,8 +146,7 @@ func UserAuth(username, password string, c echo.Context) (bool, error) {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, user.Password) {
-			user, _ = users.GetUser(user.ID)
-			return true, c.JSON(200, user)
+			return true, nil
 		}
 	}
 
