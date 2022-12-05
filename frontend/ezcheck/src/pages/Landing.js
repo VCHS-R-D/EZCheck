@@ -81,9 +81,7 @@ export default function Landing() {
         };
         axios(config)
         .then(function (response) {
-        console.log(JSON.stringify(response.data));
         if(String(response.data) === "success"){
-            console.log("ok");
             navigate("/student")
         }
         })
@@ -107,10 +105,8 @@ export default function Landing() {
         data : formdata
         };
         axios(config)
-        .then(function (response) {
-        console.log(JSON.stringify(response.data));
+        .then(function (response) {;
         if(String(response.data) === "success"){
-            console.log("ok");
             navigate("/admin")
             const token = `${username}:${password}`;
             const encodedToken = Buffer.from(token).toString('base64');
