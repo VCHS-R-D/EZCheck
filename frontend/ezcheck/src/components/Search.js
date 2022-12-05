@@ -13,30 +13,34 @@ function Search(props) {
 
     useEffect(() => {handleSearch()}, [])
 
-    function handleSelectStudent(id) {
+    function handleSelectStudent(student) {
         props.onHide();
-        console.log(id);
-        setCookie('studentID', id, { path: '/'});
+        localStorage.setItem("student", JSON.stringify(student));
+        console.log(student);
     }
-    function handleSearch(){
+    async function handleSearch(){
         console.log(cookie.authToken);
         var config = {
-        method: 'post',
-        url: 'http://localhost:8080/admin/search/users',
-        headers: { 
-            'Authorization': `Basic ${cookie.authToken}`
-        }
-        };
-
-        axios(config)
+            method: 'post',
+            url: 'http://localhost:8080/admin/search/users',
+            headers: { 
+              'Authorization': `Basic ${cookie.authToken}`, 
+            }
+          };
+          
+        await axios(config)
         .then(function (response) {
-        console.log(JSON.parse(("[" + response.data.match(/[^[\]]+(?=])/g)[0]) + "]"[0]));
-        setStudentDict(JSON.parse(("[" + response.data.match(/[^[\]]+(?=])/g)[0]) + "]"[0]));
-
+            const res = async () => {
+                console.log(response.data);
+                setStudentDict(JSON.parse(("[" + response.data.match(/[^[\]]+(?=])/g)[0]) + "]"[0]));
+            }
+            res();
         })
         .catch(function (error) {
-        console.log(error);
-
+            const err = async () => {
+                console.log(error.stack);
+            }
+        err();
         });
     }
     return (
@@ -48,7 +52,7 @@ function Search(props) {
         >
 
         <Modal.Body>
-            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student.id)}>{student.first} {student.last} ({student.grade})</button>))}
+            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade})</button>))}
         </Modal.Body>
         </Modal>
     )
