@@ -107,21 +107,43 @@ func UncertifyUser(adminID, userID, machineID string) error {
 
 func SearchUsers(query map[string]interface{}) []User {
 	var users []User
+
+	if len(query) == 0 {
+		postgresmanager.QueryAll(&users)
+		for i, u := range users {
+			u.Password = ""
+			users[i] = u
+		}
+		return users
+	}
+
 	postgresmanager.GroupQuery(query, &users)
 	for i, u := range users {
 		u.Password = ""
 		users[i] = u
 	}
+	
 	return users
 }
 
 func SearchAdmins(query map[string]interface{}) []Admin {
 	var admins []Admin
+
+	if len(query) == 0 {
+		postgresmanager.QueryAll(&admins)
+		for i, a := range admins {
+			a.Password = ""
+			admins[i] = a
+		}
+		return admins
+	}
+
 	postgresmanager.GroupQuery(query, &admins)
 	for i, a := range admins {
 		a.Password = ""
 		admins[i] = a
 	}
+
 	return admins
 }
 
