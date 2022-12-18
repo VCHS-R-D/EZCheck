@@ -71,23 +71,23 @@ func AuthenticateUser(code, machineID string) (string, error) {
 	var user *User
 
 	if err := postgresmanager.Query(&User{Code: code}, &user); err != nil {
-		return "{\"error\": \"user not found\"}", err
+		return "", err
 	}
 
 	var machines []*machines.Machine
 	err := postgresmanager.ReadAssociation(&user, "Machines", &machines)
 
 	if err != nil {
-		return "{\"error\": \"could not read user's machines\"}", nil
+		return "", err
 	}
 
 	for _, machine := range machines {
 		if machine.ID == machineID {
 			actions, err := machine.SignIn()
 			if err != nil {
-				return "{\"error\": \"could not sign in\"}", nil
+				return "", err
 			}
-			log.Log(fmt.Sprintf("%s signed in to machine %s", user.Username, machine.Name))
+			log.Log(fmt.Sprintf("%s %s (Username: %s) signed in to machine %s", user.FirstName, user.LastName, user.Username, machine.Name))
 			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions), nil
 		}
 	}

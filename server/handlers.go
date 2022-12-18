@@ -167,7 +167,27 @@ func GetMachines(c echo.Context) error {
 }
 
 func SignOut(c echo.Context) error {
-	if err := machines.SignOut(c.FormValue("id")); err != nil {
+	m := echo.Map{}
+	if err := c.Bind(&m); err != nil {
+		return c.JSON(400, err)
+	}
+
+	var name string
+	var machineID string
+
+	if name, ok := m["name"]; ok {
+		name = name.(string)
+	} else {
+		return c.JSON(400, "name key not found")
+	}
+
+	if machineID, ok := m["machineID"]; ok {
+		machineID = machineID.(string)
+	} else {
+		return c.JSON(400, "machineID key not found")
+	}
+
+	if err := machines.SignOut(name, machineID); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -195,26 +215,34 @@ func Authenticate(c echo.Context) error {
 	if code, ok := m["code"]; ok {
 		code = code.(string)
 	} else {
-		return c.JSON(400, "code not found")
+		return c.JSON(400, "code key not found")
 	}
 
 	if machineID, ok := m["machineID"]; ok {
 		machineID = machineID.(string)
 	} else {
-		return c.JSON(400, "machineID not found")
+		return c.JSON(400, "machineID key not found")
 	}
 
 	output, err := users.AuthenticateUser(code, machineID)
 
 	if err != nil {
-		output, err = users.AuthenticateAdmin(code, machineID)
-		if err != nil {
-			return c.String(400, "could not authenticate this person")
+		if err.Error() == "user not found" {
+			output, err = users.AuthenticateAdmin(code, machineID)
+			if err != nil {
+				if err.Error() == "user not found" {
+					return c.String(400, "could not authenticate this person")
+				} else {
+					return c.JSON(400, err)
+				}
+			}
+			return c.String(200, output)
+		} else {
+			return c.JSON(400, err)
 		}
-		return c.JSON(200, output)
 	}
 
-	return c.JSON(200, output)
+	return c.String(200, output)
 }
 
 func ReadLog(c echo.Context) error {
