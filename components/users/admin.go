@@ -151,21 +151,21 @@ func AuthenticateAdmin(code, machineID string) (string, error) {
 	var admin *Admin
 
 	if err := postgresmanager.Query(&Admin{Code: code}, &admin); err != nil {
-		return "{\"error\": \"admin not found\"}", err
+		return "", err
 	}
 
 	var machine *machines.Machine
 	if err := postgresmanager.Query(&machines.Machine{ID: machineID}, &machine); err != nil {
-		return "{\"error\": \"machine not found\"}", nil
+		return "", err
 	}
 
 	actions, err := machine.SignIn()
 	if err != nil {
 		log.Log(fmt.Sprintf("%s failed to sign in to machine %s", admin.Username, machineID))
-		return "{\"error\": \"could not sign in\"}", nil
+		return "", err
 	}
 
-	log.Log(fmt.Sprintf("%s signed in to machine %s", admin.Username, machine.Name))
+	log.Log(fmt.Sprintf("%s %s (Username: %s) signed in to machine %s", admin.FirstName, admin.LastName, admin.Username, machine.Name))
 	return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", admin.FirstName, admin.LastName, actions), nil
 }
 
