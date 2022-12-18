@@ -60,11 +60,7 @@ func SearchUsers(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	if err := users.SearchUsers(m); err != nil {
-		return c.JSON(400, err)
-	}
-
-	return c.JSON(200, "success")
+	return c.JSON(200, users.SearchUsers(m))
 }
 
 func SearchAdmins(c echo.Context) error {
@@ -73,11 +69,7 @@ func SearchAdmins(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	if err := users.SearchAdmins(m); err != nil {
-		return c.JSON(400, err)
-	}
-
-	return c.JSON(200, "success")
+	return c.JSON(200, users.SearchAdmins(m))
 }
 
 func GetAdmin(c echo.Context) error {
