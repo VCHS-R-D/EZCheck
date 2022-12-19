@@ -21,6 +21,8 @@ export default function Admin() {
     const student = JSON.parse(localStorage.getItem("student"));
     function viewMachines(){
         setCurrentPage("machines");
+        localStorage.removeItem("student");
+        renderStudent();
         renderPages();
     }
     
@@ -63,7 +65,7 @@ export default function Admin() {
         else{
             return(
                 <React.Fragment>
-                    <div>b</div>
+                    <div></div>
                 </React.Fragment>
             )
         }
@@ -77,7 +79,7 @@ export default function Admin() {
             <button>Logs</button>
             
             {renderPages()}
-            {/* {renderStudent()} */}
+            {renderStudent()}
         </div>
     )
 }

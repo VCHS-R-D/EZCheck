@@ -119,6 +119,31 @@ export default function Landing() {
         });
     }
 
+    function handleStudentCreate() {
+        var formdata = new FormData();
+        formdata.append("username", username);
+        formdata.append("password", password);
+        formdata.append("first", firstName);
+        formdata.append("last", lastName);
+        formdata.append("grade", grade);
+        formdata.append("code", code);
+        var config = {
+        method: 'post',
+        url: 'http://localhost:8080/student/create',
+        headers: formdata.getHeaders ? formdata.getHeaders() : { 'Content-Type': 'multipart/form-data' },
+        data : formdata
+        };
+        axios(config)
+        .then(function (response) {;
+        if(String(response.data) === "success"){
+            navigate("/student")
+        }
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    }
+
     const renderForm = () => {
         if(userType === "admin"){
             return(
