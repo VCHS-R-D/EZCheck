@@ -12,18 +12,11 @@ import (
 )
 
 func CreateAdmin(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-	firstName := c.FormValue("first")
-	lastName := c.FormValue("last")
-	code := c.FormValue("code")
-	adminPass := c.FormValue("adminPass")
-
-	if adminPass != os.Getenv("ADMIN_PASS") {
+	if c.FormValue("adminPass") != os.Getenv("ADMIN_PASS") {
 		return c.JSON(400, "Invalid admin password")
 	}
 
-	if err := users.CreateAdmin(username, password, firstName, lastName, code); err != nil {
+	if err := users.CreateAdmin(c.FormValue("username"), c.FormValue("password"), c.FormValue("first"), c.FormValue("last"), c.FormValue("code")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -31,11 +24,7 @@ func CreateAdmin(c echo.Context) error {
 }
 
 func CertifyUser(c echo.Context) error {
-	adminID := c.FormValue("adminID")
-	userID := c.FormValue("userID")
-	machineID := c.FormValue("machineID")
-
-	if err := users.CertifyUser(adminID, userID, machineID); err != nil {
+	if err := users.CertifyUser(c.FormValue("adminID"), c.FormValue("userID"), c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -43,11 +32,7 @@ func CertifyUser(c echo.Context) error {
 }
 
 func UncertifyUser(c echo.Context) error {
-	adminID := c.FormValue("adminID")
-	userID := c.FormValue("userID")
-	machineID := c.FormValue("machineID")
-
-	if err := users.UncertifyUser(adminID, userID, machineID); err != nil {
+	if err := users.UncertifyUser(c.FormValue("adminID"), c.FormValue("userID"), c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -102,14 +87,7 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 }
 
 func CreateUser(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-	firstName := c.FormValue("first")
-	lastName := c.FormValue("last")
-	code := c.FormValue("code")
-	grade := c.FormValue("grade")
-
-	if err := users.CreateUser(username, password, firstName, lastName, grade, code); err != nil {
+	if err := users.CreateUser(c.FormValue("username"), c.FormValue("password"), c.FormValue("first"), c.FormValue("last"), c.FormValue("grade"), c.FormValue("code")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -151,9 +129,7 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 func CreateMachine(c echo.Context) error {
-	name := c.FormValue("name")
-
-	if err := machines.CreateMachine(name); err != nil {
+	if err := machines.CreateMachine(c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -161,9 +137,7 @@ func CreateMachine(c echo.Context) error {
 }
 
 func GetMachines(c echo.Context) error {
-	machines := machines.ReadMachines()
-
-	return c.JSON(200, machines)
+	return c.JSON(200, machines.GetMachines())
 }
 
 func SignOut(c echo.Context) error {
@@ -195,7 +169,7 @@ func SignOut(c echo.Context) error {
 }
 
 func DeleteMachine(c echo.Context) error {
-	if err := machines.DeleteMachine(c.FormValue("id")); err != nil {
+	if err := machines.DeleteMachine(c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -203,7 +177,6 @@ func DeleteMachine(c echo.Context) error {
 }
 
 func Authenticate(c echo.Context) error {
-
 	m := echo.Map{}
 	if err := c.Bind(&m); err != nil {
 		return c.JSON(400, err)
@@ -254,10 +227,7 @@ func ReadLog(c echo.Context) error {
 }
 
 func AddAction(c echo.Context) error {
-	machineID := c.FormValue("machineID")
-	actionInt := c.FormValue("actionInt")
-
-	if err := machines.AddAction(machineID, actionInt); err != nil {
+	if err := machines.AddAction(c.FormValue("machineID"), c.FormValue("actionID")); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -265,10 +235,7 @@ func AddAction(c echo.Context) error {
 }
 
 func DeleteAction(c echo.Context) error {
-	machineID := c.FormValue("machineID")
-	actionInt := c.FormValue("actionInt")
-
-	if err := machines.DeleteAction(machineID, actionInt); err != nil {
+	if err := machines.DeleteAction(c.FormValue("machineID"), c.FormValue("actionID")); err != nil {
 		return c.JSON(400, err)
 	}
 
