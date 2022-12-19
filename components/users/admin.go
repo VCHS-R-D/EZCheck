@@ -23,7 +23,6 @@ type Admin struct {
 }
 
 func CreateAdmin(username, password, firstName, lastName, code string) error {
-
 	var a *Admin
 	err := postgresmanager.Query(&Admin{Code: code}, &a)
 
@@ -43,10 +42,9 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 	return err
 }
 
-func GetAdmin(id string) (Admin, error) {
+func GetAdmin(username string) (Admin, error) {
 	var admin Admin
-	
-	err := postgresmanager.Query(&Admin{ID: id}, &admin)
+	err := postgresmanager.Query(&Admin{Username: username}, &admin)
 	if err != nil {
 		return Admin{}, err
 	}

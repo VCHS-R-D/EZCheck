@@ -23,7 +23,6 @@ type User struct {
 }
 
 func CreateUser(username, password, firstName, lastName, grade, code string) error {
-
 	var u *User
 	err := postgresmanager.Query(&User{Code: code}, &u)
 
@@ -44,12 +43,11 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	return err
 }
 
-func GetUser(id string) (User, error) {
-
+func GetUser(username string) (User, error) {
 	var user User
 	var machines []*machines.Machine
 
-	err := postgresmanager.Query(&User{ID: id}, &user)
+	err := postgresmanager.Query(&User{Username: username}, &user)
 
 	if err != nil {
 		return User{}, err

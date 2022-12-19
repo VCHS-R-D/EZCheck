@@ -58,7 +58,7 @@ func SearchAdmins(c echo.Context) error {
 }
 
 func GetAdmin(c echo.Context) error {
-	admin, err := users.GetAdmin(c.FormValue("id"))
+	admin, err := users.GetAdmin(c.FormValue("username"))
 	if err != nil {
 		return c.JSON(400, err)
 	}
@@ -95,7 +95,7 @@ func CreateUser(c echo.Context) error {
 }
 
 func GetUser(c echo.Context) error {
-	user, err := users.GetUser(c.FormValue("id"))
+	user, err := users.GetUser(c.FormValue("username"))
 	if err != nil {
 		return c.JSON(400, err)
 	}
