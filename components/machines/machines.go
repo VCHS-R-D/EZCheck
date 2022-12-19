@@ -21,7 +21,7 @@ func CreateMachine(id string) error {
 	return postgresmanager.Save(&machine)
 }
 
-func ReadMachines() []Machine {
+func GetMachines() []Machine {
 	var machines []Machine
 
 	postgresmanager.QueryAll(&machines)
