@@ -87,12 +87,12 @@ func AuthenticateUser(code, machineID string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			log.Log(fmt.Sprintf("%s %s (Username: %s) signed in to machine %s", user.FirstName, user.LastName, user.Username, machine.Name))
+			log.Log(fmt.Sprintf("%s %s (Username: %s) signed in to machine %s", user.FirstName, user.LastName, user.Username, machine.ID))
 			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions), nil
 		}
 	}
 
-	log.Log(fmt.Sprintf("%s tried to sign in to machine %s", user.Username, machineID))
+	log.Log(fmt.Sprintf("%s failed to sign in to machine %s", user.Username, machineID))
 	return "{\"authorized\": false}", nil
 }
 
