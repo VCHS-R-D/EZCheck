@@ -32,7 +32,7 @@ function Search(props) {
         .then(function (response) {
             const res = async () => {
                 console.log(response.data);
-                setStudentDict(JSON.parse(("[" + response.data.match(/[^[\]]+(?=])/g)[0]) + "]"[0]));
+                setStudentDict(response.data);
             }
             res();
         })
