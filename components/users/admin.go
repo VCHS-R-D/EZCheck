@@ -109,7 +109,10 @@ func SearchUsers(query map[string]interface{}) []User {
 	if len(query) == 0 {
 		postgresmanager.QueryAll(&users)
 		for i, u := range users {
+			var machines []*machines.Machine
 			u.Password = ""
+			postgresmanager.ReadAssociation(&u, "Machines", &machines)
+			u.Machines = machines
 			users[i] = u
 		}
 		return users
@@ -117,7 +120,10 @@ func SearchUsers(query map[string]interface{}) []User {
 
 	postgresmanager.GroupQuery(query, &users)
 	for i, u := range users {
+		var machines []*machines.Machine
 		u.Password = ""
+		postgresmanager.ReadAssociation(&u, "Machines", &machines)
+		u.Machines = machines
 		users[i] = u
 	}
 	
