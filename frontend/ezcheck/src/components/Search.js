@@ -5,6 +5,7 @@ import { Modal, Button } from "react-bootstrap";
 
 var FormData = require('form-data');
 
+
 function Search(props) {
     const [cookie, setCookie] = useCookies('user');
     const [studentDict, setStudentDict] = React.useState([]);
@@ -15,9 +16,10 @@ function Search(props) {
 
     function handleSelectStudent(student) {
         props.onHide();
-        localStorage.setItem("student", JSON.stringify(student));
-        console.log(student);
+        localStorage.setItem("student", student.id);
+        console.log(student.id);
     }
+    
     async function handleSearch(){
         console.log(cookie.authToken);
         var config = {
@@ -52,7 +54,7 @@ function Search(props) {
         >
 
         <Modal.Body>
-            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade})</button>))}
+            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade}) </button>))}
         </Modal.Body>
         </Modal>
     )
