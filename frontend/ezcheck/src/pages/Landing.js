@@ -111,7 +111,6 @@ export default function Landing() {
             const token = `${username}:${password}`;
             const encodedToken = Buffer.from(token).toString('base64');
             setCookie('authToken', encodedToken, { path: '/'});
-            console.log(encodedToken);
         }
         })
         .catch(function (error) {
@@ -126,7 +125,6 @@ export default function Landing() {
         
         const token = `${username}:${password}`;
         const encodedToken = Buffer.from(token).toString('base64');
-        console.log(encodedToken)
         var config = {
         method: 'post',
         url: 'http://localhost:8080/admin/get',
@@ -137,7 +135,6 @@ export default function Landing() {
         };
         axios(config)
         .then(function (response) {;
-            console.log(response.data)
             navigate("/admin")
             setCookie('authToken', encodedToken, { path: '/'});
             setCookie('adminID', response.data.id, { path: '/'});
