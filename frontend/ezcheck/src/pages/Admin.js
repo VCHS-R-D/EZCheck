@@ -11,16 +11,24 @@ export default function Admin() {
     const [show, setShow] = React.useState(false);
     const [cookie, setCookie] = useCookies('user');
     const [currentPage, setCurrentPage] = React.useState("");
-    const [student, setStudent] = React.useState([]);
+    const student = JSON.parse(localStorage.getItem("student"));
     const [options, setOptions] = React.useState([""]);
     const [selectedOption, setSelectedOption] = React.useState("");
+    const [isLoading, setLoading] = React.useState(true);
     
     React.useEffect(() => {onStart()}, [])
+
+    React.useEffect(() => {
+    
+        window.addEventListener('storage', () => {
+           renderPages();
+           console.log("refresh");
+        });
+        }, [])
     
     function handleOptionChange(selectedOption)
     {
         setSelectedOption({selectedOption});
-        console.log(selectedOption);
     }
 
     function onStart(){
@@ -36,7 +44,6 @@ export default function Admin() {
         };
         axios(config)
         .then(function (response) {
-            console.log(JSON.stringify(response.data));
             response.data.map((machine) => { return arr.push({label: machine.id, value: machine.id});
         });
             setOptions(arr);
@@ -49,7 +56,7 @@ export default function Admin() {
     function handleCertify() {
         var formdata = new FormData();
         formdata.append("adminID", cookie.adminID);
-        formdata.append("studentID", student.id);
+        formdata.append("userID", student.id);
         formdata.append("machineID", selectedOption.selectedOption.value);
         var config = {
         method: 'post',
@@ -61,11 +68,11 @@ export default function Admin() {
         };
         axios(config)
         .then(function (response) {
-            console.log(response.data);
+            alert(response.data);
             handleStudentSearch();
             renderStudent();
             renderPages();
-            alert(response.data);
+            
         })
         .catch(function (error) {
         console.log(error);
@@ -75,7 +82,7 @@ export default function Admin() {
     function handleUncertify() {
         var formdata = new FormData();
         formdata.append("adminID", cookie.adminID);
-        formdata.append("studentID", student.id);
+        formdata.append("userID", student.id);
         formdata.append("machineID", selectedOption.selectedOption.value);
         console.log(cookie.adminID, student.id, selectedOption.selectedOption.value);
         var config = {
@@ -88,17 +95,18 @@ export default function Admin() {
         };
         axios(config)
         .then(function (response) {
+            alert(response.data);
             handleStudentSearch();
             renderStudent();
             renderPages();
-            console.log(response.data);
-            alert(response.data);
+            
         })
         .catch(function (error) {
         console.log(error);
         });
     }
     function viewMachines(){
+        setShow(false);
         setCurrentPage("machines");
         localStorage.removeItem("student");
         renderStudent();
@@ -106,6 +114,7 @@ export default function Admin() {
     }
     
     function viewLogs(){
+        setShow(false);
         setCurrentPage("logs");
         localStorage.removeItem("student");
         renderStudent();
@@ -113,9 +122,10 @@ export default function Admin() {
     }
 
     async function handleStudentSearch(){
+        setLoading(true);
         if(localStorage.getItem("student") != null){
         var formdata = new FormData();
-        formdata.append("id", localStorage.getItem("student"));
+        formdata.append("id", JSON.parse(localStorage.getItem("student")).id);
         var config = {
             method: 'post',
             url: 'http://localhost:8080/admin/search/users',
@@ -128,8 +138,8 @@ export default function Admin() {
         await axios(config)
         .then(function (response) {
             const res = async () => {
-                console.log(response.data[0]);
-                setStudent(response.data[0]);
+                localStorage.setItem("student", JSON.stringify(response.data[0]))
+                setLoading(false);
             }
             res();
         })
@@ -176,7 +186,7 @@ export default function Admin() {
     }
 
     function renderStudent(){
-        if(localStorage.getItem("student") != null){
+        if(localStorage.getItem("student") != null && isLoading == false){
             return(
                 <React.Fragment>
                     <div>{student.first}</div>
@@ -184,7 +194,7 @@ export default function Admin() {
                     <div>{student.username}</div>
                     <div>{student.grade}</div>
                     <div>{student.code}</div>
-                    {student.Machines.map(machine => (<div>{machine.id} {String(machine.in_use)}</div>))}
+                    {student.Machines.map(machine => (<div key={machine.id}>MACHINE ID: {String(machine.id)}</div>))}
                     <Select options={options} onChange={handleOptionChange} noOptionsMessage={() => "name not found"} />
                     <button onClick={handleCertify}>Certify</button>
                     <button onClick={handleUncertify}>Uncertify</button>

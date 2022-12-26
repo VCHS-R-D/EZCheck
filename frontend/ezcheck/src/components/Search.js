@@ -16,8 +16,8 @@ function Search(props) {
 
     function handleSelectStudent(student) {
         props.onHide();
-        localStorage.setItem("student", student.id);
-        console.log(student.id);
+        localStorage.setItem("student", JSON.stringify(student));
+        console.log(student);
     }
     
     async function handleSearch(){
@@ -33,7 +33,6 @@ function Search(props) {
         await axios(config)
         .then(function (response) {
             const res = async () => {
-                console.log(response.data);
                 setStudentDict(response.data);
             }
             res();

@@ -13,7 +13,6 @@ function MachineList(){
     
     axios(config)
     .then(function (response) {
-      console.log(JSON.stringify(response.data));
       setMachineList(response.data);
     })
     .catch(function (error) {
