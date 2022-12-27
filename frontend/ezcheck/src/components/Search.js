@@ -5,8 +5,9 @@ import { Modal, Button } from "react-bootstrap";
 
 var FormData = require('form-data');
 
+
 function Search(props) {
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie, setCookie, removeCookie] = useCookies('user');
     const [studentDict, setStudentDict] = React.useState([]);
     const [show, setShow] = React.useState(props.show);
     const [studentID, setStudentID] = React.useState("");
@@ -18,6 +19,7 @@ function Search(props) {
         localStorage.setItem("student", JSON.stringify(student));
         console.log(student);
     }
+    
     async function handleSearch(){
         console.log(cookie.authToken);
         var config = {
@@ -31,7 +33,6 @@ function Search(props) {
         await axios(config)
         .then(function (response) {
             const res = async () => {
-                console.log(response.data);
                 setStudentDict(response.data);
             }
             res();
@@ -52,7 +53,7 @@ function Search(props) {
         >
 
         <Modal.Body>
-            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade})</button>))}
+            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade}) </button>))}
         </Modal.Body>
         </Modal>
     )

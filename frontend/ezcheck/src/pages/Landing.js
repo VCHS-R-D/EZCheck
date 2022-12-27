@@ -7,7 +7,6 @@ import { Buffer } from 'buffer'
 var FormData = require('form-data');
 
 
-
 const customStyles = {
     content: {
       top: '50%',
@@ -18,6 +17,7 @@ const customStyles = {
       transform: 'translate(-50%, -50%)',
     },
   };
+
 
 export default function Landing() {
     const [userType, setUserType] = React.useState("");
@@ -31,7 +31,7 @@ export default function Landing() {
     const [grade, setGrade] = React.useState("");
     const [adminCode, setAdminCode] = React.useState("");
     const navigate = useNavigate();
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie, setCookie,removeCookie] = useCookies('user');
 
     function adminSignup() {
         setUserType("admin");
@@ -107,11 +107,10 @@ export default function Landing() {
         axios(config)
         .then(function (response) {;
         if(String(response.data) === "success"){
-            navigate("/admin")
             const token = `${username}:${password}`;
             const encodedToken = Buffer.from(token).toString('base64');
             setCookie('authToken', encodedToken, { path: '/'});
-            console.log(encodedToken);
+            handleAdminSignin()
         }
         })
         .catch(function (error) {
@@ -119,30 +118,33 @@ export default function Landing() {
         });
     }
 
-    function handleStudentCreate() {
+    function handleAdminSignin() {
         var formdata = new FormData();
         formdata.append("username", username);
         formdata.append("password", password);
-        formdata.append("first", firstName);
-        formdata.append("last", lastName);
-        formdata.append("grade", grade);
-        formdata.append("code", code);
+        
+        const token = `${username}:${password}`;
+        const encodedToken = Buffer.from(token).toString('base64');
         var config = {
         method: 'post',
-        url: 'http://localhost:8080/student/create',
-        headers: formdata.getHeaders ? formdata.getHeaders() : { 'Content-Type': 'multipart/form-data' },
+        url: 'http://localhost:8080/admin/get',
+        headers: {
+            'Authorization': `Basic ${encodedToken}`,
+        },
         data : formdata
         };
         axios(config)
         .then(function (response) {;
-        if(String(response.data) === "success"){
-            navigate("/student")
-        }
+            navigate("/admin")
+            setCookie('authToken', encodedToken, { path: '/'});
+            setCookie('adminID', response.data.id, { path: '/'});
         })
         .catch(function (error) {
         console.log(error);
         });
     }
+
+
 
     const renderForm = () => {
         if(userType === "admin"){
@@ -151,10 +153,10 @@ export default function Landing() {
                     {isLogin ? (
                         <div>
                             <form>
-                                <input></input>
-                                <input></input>
+                            <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
                             </form>
-                            <button><Link to="/admin">Go</Link></button>
+                            <button onClick={handleAdminSignin}>Submit</button>
                         </div>
                     ) : (
                         <span>
