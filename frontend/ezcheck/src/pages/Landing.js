@@ -31,7 +31,7 @@ export default function Landing() {
     const [grade, setGrade] = React.useState("");
     const [adminCode, setAdminCode] = React.useState("");
     const navigate = useNavigate();
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie, setCookie,removeCookie] = useCookies('user');
 
     function adminSignup() {
         setUserType("admin");
@@ -107,10 +107,10 @@ export default function Landing() {
         axios(config)
         .then(function (response) {;
         if(String(response.data) === "success"){
-            navigate("/admin")
             const token = `${username}:${password}`;
             const encodedToken = Buffer.from(token).toString('base64');
             setCookie('authToken', encodedToken, { path: '/'});
+            handleAdminSignin()
         }
         })
         .catch(function (error) {
