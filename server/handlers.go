@@ -20,7 +20,7 @@ func CreateAdmin(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func CertifyUser(c echo.Context) error {
@@ -28,7 +28,7 @@ func CertifyUser(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func UncertifyUser(c echo.Context) error {
@@ -36,7 +36,7 @@ func UncertifyUser(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func SearchUsers(c echo.Context) error {
@@ -70,7 +70,7 @@ func DeleteAdmin(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func AdminAuth(username, password string, c echo.Context) (bool, error) {
@@ -91,7 +91,7 @@ func CreateUser(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func GetUser(c echo.Context) error {
@@ -107,7 +107,7 @@ func DeleteUser(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func UserAuth(username, password string, c echo.Context) (bool, error) {
@@ -133,7 +133,7 @@ func CreateMachine(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func GetMachines(c echo.Context) error {
@@ -152,20 +152,20 @@ func SignOut(c echo.Context) error {
 	if name, ok := m["name"]; ok {
 		name = name.(string)
 	} else {
-		return c.JSON(400, "name key not found")
+		return c.String(400, "name key not found")
 	}
 
 	if machineID, ok := m["machineID"]; ok {
 		machineID = machineID.(string)
 	} else {
-		return c.JSON(400, "machineID key not found")
+		return c.String(400, "machineID key not found")
 	}
 
 	if err := machines.SignOut(name, machineID); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func DeleteMachine(c echo.Context) error {
@@ -173,7 +173,7 @@ func DeleteMachine(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func Authenticate(c echo.Context) error {
@@ -188,13 +188,13 @@ func Authenticate(c echo.Context) error {
 	if code, ok := m["code"]; ok {
 		code = code.(string)
 	} else {
-		return c.JSON(400, "code key not found")
+		return c.String(400, "code key not found")
 	}
 
 	if machineID, ok := m["machineID"]; ok {
 		machineID = machineID.(string)
 	} else {
-		return c.JSON(400, "machineID key not found")
+		return c.String(400, "machineID key not found")
 	}
 
 	output, err := users.AuthenticateUser(code, machineID)
@@ -223,7 +223,7 @@ func ReadLog(c echo.Context) error {
 	if err != nil {
 		return c.JSON(400, err)
 	}
-	return c.JSON(200, log)
+	return c.String(200, log)
 }
 
 func AddAction(c echo.Context) error {
@@ -231,7 +231,7 @@ func AddAction(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func DeleteAction(c echo.Context) error {
@@ -239,5 +239,5 @@ func DeleteAction(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
