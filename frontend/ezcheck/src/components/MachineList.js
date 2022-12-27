@@ -13,8 +13,8 @@ function MachineList(){
     
     axios(config)
     .then(function (response) {
-      console.log(JSON.stringify(response.data));
       setMachineList(response.data);
+      
     })
     .catch(function (error) {
       console.log(error);
@@ -23,7 +23,7 @@ function MachineList(){
   }
     return( <>
       <div>
-      {machineList.map(machine => (<h1 key={machine.id}>{machine.name} {String(machine.in_use)} ({machine.actions})</h1>))}
+      {machineList.map(machine => (<div key={machine.id}>{machine.name} in-use: {String(machine.in_use)} actions: ({machine.actions})</div>))}
       </div>
     </>
   )
