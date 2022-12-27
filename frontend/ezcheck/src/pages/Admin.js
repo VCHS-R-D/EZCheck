@@ -5,26 +5,19 @@ import Search from '../components/Search.js';
 import Logs from '../components/logs.js';
 import Select from 'react-select';
 import axios from "axios";
-import {Cookies, useCookies} from 'react-cookie';
+import {Cookies, useCookies, removeCookie} from 'react-cookie';
+import { useNavigate } from "react-router-dom";
 
 export default function Admin() {
     const [show, setShow] = React.useState(false);
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie, setCookie, removeCookie] = useCookies('user');
     const [currentPage, setCurrentPage] = React.useState("");
     const student = JSON.parse(localStorage.getItem("student"));
     const [options, setOptions] = React.useState([""]);
     const [selectedOption, setSelectedOption] = React.useState("");
     const [isLoading, setLoading] = React.useState(true);
-    
+    const navigate = useNavigate();
     React.useEffect(() => {onStart()}, [])
-
-    React.useEffect(() => {
-    
-        window.addEventListener('storage', () => {
-           renderPages();
-           console.log("refresh");
-        });
-        }, [])
     
     function handleOptionChange(selectedOption)
     {
@@ -84,7 +77,6 @@ export default function Admin() {
         formdata.append("adminID", cookie.adminID);
         formdata.append("userID", student.id);
         formdata.append("machineID", selectedOption.selectedOption.value);
-        console.log(cookie.adminID, student.id, selectedOption.selectedOption.value);
         var config = {
         method: 'post',
         url: 'http://localhost:8080/admin/uncertify',
@@ -156,6 +148,14 @@ export default function Admin() {
         setCurrentPage("search");
         setShow(true);
     }
+    
+    function logout(){
+        localStorage.removeItem("student");
+        removeCookie("authToken", { path: '/'});
+        removeCookie("studentID", { path: '/'});
+        removeCookie("adminID", { path: '/'});
+        navigate("/")
+    }
     function renderPages(){
         if(currentPage === "machines"){
             return (
@@ -216,6 +216,7 @@ export default function Admin() {
             <Search show={show} onHide={() => setShow(false)} />
             <button onClick={viewMachines}>Machines</button>
             <button onClick={viewLogs}>Logs</button>
+            <button onClick={logout}>Logout</button>
             
             {renderPages()}
             {renderStudent()}

@@ -14,6 +14,7 @@ function MachineList(){
     axios(config)
     .then(function (response) {
       setMachineList(response.data);
+      
     })
     .catch(function (error) {
       console.log(error);

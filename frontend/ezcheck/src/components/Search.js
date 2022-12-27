@@ -7,7 +7,7 @@ var FormData = require('form-data');
 
 
 function Search(props) {
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie, setCookie, removeCookie] = useCookies('user');
     const [studentDict, setStudentDict] = React.useState([]);
     const [show, setShow] = React.useState(props.show);
     const [studentID, setStudentID] = React.useState("");
