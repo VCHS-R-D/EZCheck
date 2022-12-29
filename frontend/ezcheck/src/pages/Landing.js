@@ -82,7 +82,10 @@ export default function Landing() {
         axios(config)
         .then(function (response) {
         if(String(response.data) === "success"){
-            navigate("/student")
+            const token = `${username}:${password}`;
+            const encodedToken = Buffer.from(token).toString('base64');
+            setCookie('authToken', encodedToken, { path: '/'});
+            handleUserSignin()
         }
         })
         .catch(function (error) {
@@ -118,6 +121,35 @@ export default function Landing() {
         });
     }
 
+    function handleUserSignin() {
+        var formdata = new FormData();
+        formdata.append("username", username);
+        formdata.append("password", password);
+        
+        const token = `${username}:${password}`;
+        const encodedToken = Buffer.from(token).toString('base64');
+        var config = {
+        method: 'post',
+        url: 'http://localhost:8080/user/get',
+        headers: {
+            'Authorization': `Basic ${encodedToken}`,
+        },
+        data : formdata
+        };
+        axios(config)
+        .then(function (response) {;
+            
+            setCookie('authToken', encodedToken, { path: '/'});
+            setCookie('userID', response.data.id, { path: '/'});
+            localStorage.setItem("student", JSON.stringify(response.data));
+            console.log(localStorage.getItem("student"))
+            navigate("/student")
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    }
+
     function handleAdminSignin() {
         var formdata = new FormData();
         formdata.append("username", username);
@@ -135,9 +167,12 @@ export default function Landing() {
         };
         axios(config)
         .then(function (response) {;
-            navigate("/admin")
+            
+            console.log(encodedToken);
             setCookie('authToken', encodedToken, { path: '/'});
             setCookie('adminID', response.data.id, { path: '/'});
+            navigate("/admin")
+            
         })
         .catch(function (error) {
         console.log(error);
@@ -182,10 +217,10 @@ export default function Landing() {
                     {isLogin ? (
                         <span>
                             <form>
-                                <input></input>
-                                <input></input>
+                                <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
                             </form>
-                            <button><Link to="/student">Go</Link></button>
+                            <button onClick={handleUserSignin}>Submit</button>
                         </span>
                     ) : (
                         <span>
