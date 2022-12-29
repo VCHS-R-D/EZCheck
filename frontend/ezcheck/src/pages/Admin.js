@@ -114,6 +114,7 @@ export default function Admin() {
     }
 
     async function handleStudentSearch(){
+        console.log(cookie);
         setLoading(true);
         if(localStorage.getItem("student") != null){
         var formdata = new FormData();
@@ -186,6 +187,7 @@ export default function Admin() {
     }
 
     function renderStudent(){
+        //TODO: not working on initial login
         if(localStorage.getItem("student") != null && isLoading == false){
             return(
                 <React.Fragment>
