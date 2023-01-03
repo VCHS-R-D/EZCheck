@@ -29,6 +29,7 @@ export default function Admin() {
         handleStudentSearch();
         setLoading(false);
     }
+
     function getMachines() {
         const arr = [];
         var config = {
@@ -121,6 +122,7 @@ export default function Admin() {
         console.log(error);
         });
     }
+    
     function viewMachines(){
         setShow(false);
         setCurrentPage("machines");
@@ -138,7 +140,6 @@ export default function Admin() {
     }
 
     async function handleStudentSearch(){
-        console.log(cookie);
         setLoading(true);
         if(localStorage.getItem("student") != null){
         var formdata = new FormData();
@@ -215,8 +216,6 @@ export default function Admin() {
 
     function renderStudent(){
         //TODO: Delete User not Working
-        console.log(localStorage.getItem("student"));
-        console.log(isLoading);
         if(localStorage.getItem("student") != null && isLoading == false){
             return(
                 <React.Fragment>

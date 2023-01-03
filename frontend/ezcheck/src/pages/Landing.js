@@ -2,10 +2,9 @@ import React from 'react'
 import Modal from 'react-modal';
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {Cookies, useCookies} from 'react-cookie';
+import {useCookies} from 'react-cookie';
 import { Buffer } from 'buffer'
 var FormData = require('form-data');
-
 
 const customStyles = {
     content: {
@@ -17,7 +16,6 @@ const customStyles = {
       transform: 'translate(-50%, -50%)',
     },
   };
-
 
 export default function Landing() {
     const [userType, setUserType] = React.useState("");
@@ -142,7 +140,6 @@ export default function Landing() {
             setCookie('authToken', encodedToken, { path: '/'});
             setCookie('userID', response.data.id, { path: '/'});
             localStorage.setItem("student", JSON.stringify(response.data));
-            console.log(localStorage.getItem("student"))
             navigate("/student")
         })
         .catch(function (error) {
@@ -167,8 +164,6 @@ export default function Landing() {
         };
         axios(config)
         .then(function (response) {;
-            
-            console.log(encodedToken);
             setCookie('authToken', encodedToken, { path: '/'});
             setCookie('adminID', response.data.id, { path: '/'});
             navigate("/admin")
@@ -178,8 +173,6 @@ export default function Landing() {
         console.log(error);
         });
     }
-
-
 
     const renderForm = () => {
         if(userType === "admin"){
@@ -239,8 +232,8 @@ export default function Landing() {
                 </React.Fragment>
             )
         }
-
     }
+    
     return (
         <div>
             <button onClick={adminSignup}>Admin Sign Up</button>
