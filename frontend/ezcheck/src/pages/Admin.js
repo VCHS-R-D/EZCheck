@@ -15,7 +15,7 @@ export default function Admin() {
     const student = JSON.parse(localStorage.getItem("student"));
     const [options, setOptions] = React.useState([""]);
     const [selectedOption, setSelectedOption] = React.useState("");
-    const [isLoading, setLoading] = React.useState(true);
+    const [isLoading, setLoading] = React.useState(false);
     const navigate = useNavigate();
     React.useEffect(() => {onStart()}, [])
     
@@ -27,7 +27,9 @@ export default function Admin() {
     function onStart(){
         getMachines();
         handleStudentSearch();
+        setLoading(false);
     }
+
     function getMachines() {
         const arr = [];
         var config = {
@@ -97,6 +99,30 @@ export default function Admin() {
         console.log(error);
         });
     }
+
+    function handleDelete() {
+        var formdata = new FormData();
+        formdata.append("id", student.id);
+        var config = {
+        method: 'delete',
+        url: 'http://localhost:8080/admin/delete/user',
+        headers: {
+            'Authorization': `Basic ${cookie.authToken}`,
+        },
+        data : formdata
+        };
+        axios(config)
+        .then(function (response) {
+            alert(response.data);
+            localStorage.removeItem("student");
+            renderStudent();
+            renderPages();
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    }
+    
     function viewMachines(){
         setShow(false);
         setCurrentPage("machines");
@@ -145,6 +171,9 @@ export default function Admin() {
     }
 
     function viewSearch(){
+        localStorage.removeItem("student");
+        
+        renderStudent();
         setCurrentPage("search");
         setShow(true);
     }
@@ -179,25 +208,37 @@ export default function Admin() {
         else{
             return (
                 <React.Fragment>
-                    <div>a</div>
+                    <div></div>
                 </React.Fragment>
             )
         }
     }
 
     function renderStudent(){
+        //TODO: Delete User not Working
         if(localStorage.getItem("student") != null && isLoading == false){
             return(
                 <React.Fragment>
-                    <div>{student.first}</div>
-                    <div>{student.last}</div>
-                    <div>{student.username}</div>
-                    <div>{student.grade}</div>
-                    <div>{student.code}</div>
+                    <div>FIRST NAME: {student.first}</div>
+                    <div>LAST NAME: {student.last}</div>
+                    <div>USERNAME: {student.username}</div>
+                    <div>GRADE: {student.grade}</div>
+                    <div>CODE: {student.code}</div>
+                    <div>ID: {student.id}</div>
                     {student.Machines.map(machine => (<div key={machine.id}>MACHINE ID: {String(machine.id)}</div>))}
                     <Select options={options} onChange={handleOptionChange} noOptionsMessage={() => "name not found"} />
-                    <button onClick={handleCertify}>Certify</button>
-                    <button onClick={handleUncertify}>Uncertify</button>
+                    <button onClick={() => {handleCertify()}}>Certify</button>
+                    <button onClick={() => {handleUncertify()}}>Uncertify</button>
+                    <button onClick={() => {handleDelete()}}>Delete User</button>
+                </React.Fragment>
+            )
+        }
+        else if(isLoading){
+            return(
+                <React.Fragment>
+                    <div>
+                        Loading...
+                    </div>
                 </React.Fragment>
             )
         }
@@ -213,11 +254,10 @@ export default function Admin() {
     return(
         <div>
             <button onClick={() => viewSearch()}>Search</button>
-            <Search show={show} onHide={() => setShow(false)} />
+            <Search show={show} onHide={() => {setShow(false);}} />
             <button onClick={viewMachines}>Machines</button>
             <button onClick={viewLogs}>Logs</button>
             <button onClick={logout}>Logout</button>
-            
             {renderPages()}
             {renderStudent()}
         </div>

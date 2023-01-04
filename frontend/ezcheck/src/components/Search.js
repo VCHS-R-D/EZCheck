@@ -3,25 +3,18 @@ import axios from "axios";
 import {Cookies, useCookies} from 'react-cookie';
 import { Modal, Button } from "react-bootstrap";
 
-var FormData = require('form-data');
-
-
 function Search(props) {
-    const [cookie, setCookie, removeCookie] = useCookies('user');
+    const [cookie] = useCookies('user');
     const [studentDict, setStudentDict] = React.useState([]);
-    const [show, setShow] = React.useState(props.show);
-    const [studentID, setStudentID] = React.useState("");
 
     useEffect(() => {handleSearch()}, [])
 
     function handleSelectStudent(student) {
         props.onHide();
         localStorage.setItem("student", JSON.stringify(student));
-        console.log(student);
     }
     
     async function handleSearch(){
-        console.log(cookie.authToken);
         var config = {
             method: 'post',
             url: 'http://localhost:8080/admin/search/users',
@@ -29,7 +22,6 @@ function Search(props) {
               'Authorization': `Basic ${cookie.authToken}`, 
             }
           };
-          
         await axios(config)
         .then(function (response) {
             const res = async () => {
@@ -44,6 +36,7 @@ function Search(props) {
         err();
         });
     }
+
     return (
         <Modal
       {...props}
@@ -51,7 +44,6 @@ function Search(props) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
         >
-
         <Modal.Body>
             {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade}) </button>))}
         </Modal.Body>
