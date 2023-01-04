@@ -95,5 +95,9 @@ func AuthenticateUser(code, machineID string) (string, error) {
 }
 
 func DeleteUser(id string) error {
+	if postgresmanager.ClearAssociations(&User{ID: id}, "Machines") != nil {
+		return postgresmanager.ClearAssociations(&User{ID: id}, "Machines")
+	}
+	
 	return postgresmanager.Delete(User{ID: id})
 }
