@@ -13,14 +13,14 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'*','0','#', 'D'}
 };
 
-byte pin_rows[ROW_NUM] = {15, 2, 4, 16}; //connect to the row pinouts of the keypad
-byte pin_column[COLUMN_NUM] = {17, 5, 18, 19}; //connect to the column pinouts of the keypad
+byte pin_rows[ROW_NUM] = {17, 5, 18, 19}; //connect to the row pinouts of the keypad
+byte pin_column[COLUMN_NUM] = {15, 2, 4, 16}; //connect to the column pinouts of the keypad
 
-Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
+Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM);
 
 
 //LCD vars
-const int rs = 14, en = 12, d4 = 33, d5 = 25, d6 = 26, d7 = 27;
+const int rs = 33, en = 25, d4 = 26, d5 = 27, d6 = 14, d7 = 12;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 //Pass vars
@@ -56,6 +56,7 @@ void loop(){
       //display
       lcd.clear();
       lcd.print(pass);
+      Serial.println(pass);
     }
   }
 }
