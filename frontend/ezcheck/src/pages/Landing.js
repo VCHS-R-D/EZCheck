@@ -2,11 +2,9 @@ import React from 'react'
 import Modal from 'react-modal';
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {Cookies, useCookies} from 'react-cookie';
+import {useCookies} from 'react-cookie';
 import { Buffer } from 'buffer'
 var FormData = require('form-data');
-
-
 
 const customStyles = {
     content: {
@@ -31,7 +29,7 @@ export default function Landing() {
     const [grade, setGrade] = React.useState("");
     const [adminCode, setAdminCode] = React.useState("");
     const navigate = useNavigate();
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie, setCookie,removeCookie] = useCookies('user');
 
     function adminSignup() {
         setUserType("admin");
@@ -81,10 +79,11 @@ export default function Landing() {
         };
         axios(config)
         .then(function (response) {
-        console.log(JSON.stringify(response.data));
         if(String(response.data) === "success"){
-            console.log("ok");
-            navigate("/student")
+            const token = `${username}:${password}`;
+            const encodedToken = Buffer.from(token).toString('base64');
+            setCookie('authToken', encodedToken, { path: '/'});
+            handleUserSignin()
         }
         })
         .catch(function (error) {
@@ -107,16 +106,68 @@ export default function Landing() {
         data : formdata
         };
         axios(config)
-        .then(function (response) {
-        console.log(JSON.stringify(response.data));
+        .then(function (response) {;
         if(String(response.data) === "success"){
-            console.log("ok");
-            navigate("/admin")
             const token = `${username}:${password}`;
             const encodedToken = Buffer.from(token).toString('base64');
             setCookie('authToken', encodedToken, { path: '/'});
-            console.log(encodedToken);
+            handleAdminSignin()
         }
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    }
+
+    function handleUserSignin() {
+        var formdata = new FormData();
+        formdata.append("username", username);
+        formdata.append("password", password);
+        
+        const token = `${username}:${password}`;
+        const encodedToken = Buffer.from(token).toString('base64');
+        var config = {
+        method: 'post',
+        url: 'http://localhost:8080/user/get',
+        headers: {
+            'Authorization': `Basic ${encodedToken}`,
+        },
+        data : formdata
+        };
+        axios(config)
+        .then(function (response) {;
+            
+            setCookie('authToken', encodedToken, { path: '/'});
+            setCookie('userID', response.data.id, { path: '/'});
+            localStorage.setItem("student", JSON.stringify(response.data));
+            navigate("/student")
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    }
+
+    function handleAdminSignin() {
+        var formdata = new FormData();
+        formdata.append("username", username);
+        formdata.append("password", password);
+        
+        const token = `${username}:${password}`;
+        const encodedToken = Buffer.from(token).toString('base64');
+        var config = {
+        method: 'post',
+        url: 'http://localhost:8080/admin/get',
+        headers: {
+            'Authorization': `Basic ${encodedToken}`,
+        },
+        data : formdata
+        };
+        axios(config)
+        .then(function (response) {;
+            setCookie('authToken', encodedToken, { path: '/'});
+            setCookie('adminID', response.data.id, { path: '/'});
+            navigate("/admin")
+            
         })
         .catch(function (error) {
         console.log(error);
@@ -130,10 +181,10 @@ export default function Landing() {
                     {isLogin ? (
                         <div>
                             <form>
-                                <input></input>
-                                <input></input>
+                            <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
                             </form>
-                            <button><Link to="/admin">Go</Link></button>
+                            <button onClick={handleAdminSignin}>Submit</button>
                         </div>
                     ) : (
                         <span>
@@ -159,10 +210,10 @@ export default function Landing() {
                     {isLogin ? (
                         <span>
                             <form>
-                                <input></input>
-                                <input></input>
+                                <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
                             </form>
-                            <button><Link to="/student">Go</Link></button>
+                            <button onClick={handleUserSignin}>Submit</button>
                         </span>
                     ) : (
                         <span>
@@ -181,8 +232,8 @@ export default function Landing() {
                 </React.Fragment>
             )
         }
-
     }
+    
     return (
         <div>
             <button onClick={adminSignup}>Admin Sign Up</button>

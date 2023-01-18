@@ -12,46 +12,31 @@ import (
 )
 
 func CreateAdmin(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-	firstName := c.FormValue("first")
-	lastName := c.FormValue("last")
-	code := c.FormValue("code")
-	adminPass := c.FormValue("adminPass")
-
-	if adminPass != os.Getenv("ADMIN_PASS") {
+	if c.FormValue("adminPass") != os.Getenv("ADMIN_PASS") {
 		return c.JSON(400, "Invalid admin password")
 	}
 
-	if err := users.CreateAdmin(username, password, firstName, lastName, code); err != nil {
+	if err := users.CreateAdmin(c.FormValue("username"), c.FormValue("password"), c.FormValue("first"), c.FormValue("last"), c.FormValue("code")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func CertifyUser(c echo.Context) error {
-	adminID := c.FormValue("adminID")
-	userID := c.FormValue("userID")
-	machineID := c.FormValue("machineID")
-
-	if err := users.CertifyUser(adminID, userID, machineID); err != nil {
+	if err := users.CertifyUser(c.FormValue("adminID"), c.FormValue("userID"), c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func UncertifyUser(c echo.Context) error {
-	adminID := c.FormValue("adminID")
-	userID := c.FormValue("userID")
-	machineID := c.FormValue("machineID")
-
-	if err := users.UncertifyUser(adminID, userID, machineID); err != nil {
+	if err := users.UncertifyUser(c.FormValue("adminID"), c.FormValue("userID"), c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func SearchUsers(c echo.Context) error {
@@ -60,11 +45,7 @@ func SearchUsers(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	if err := users.SearchUsers(m); err != nil {
-		return c.JSON(400, err)
-	}
-
-	return c.JSON(200, "success")
+	return c.JSON(200, users.SearchUsers(m))
 }
 
 func SearchAdmins(c echo.Context) error {
@@ -73,15 +54,11 @@ func SearchAdmins(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	if err := users.SearchAdmins(m); err != nil {
-		return c.JSON(400, err)
-	}
-
-	return c.JSON(200, "success")
+	return c.JSON(200, users.SearchAdmins(m))
 }
 
 func GetAdmin(c echo.Context) error {
-	admin, err := users.GetAdmin(c.FormValue("id"))
+	admin, err := users.GetAdmin(c.FormValue("username"))
 	if err != nil {
 		return c.JSON(400, err)
 	}
@@ -93,7 +70,7 @@ func DeleteAdmin(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func AdminAuth(username, password string, c echo.Context) (bool, error) {
@@ -110,22 +87,15 @@ func AdminAuth(username, password string, c echo.Context) (bool, error) {
 }
 
 func CreateUser(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-	firstName := c.FormValue("first")
-	lastName := c.FormValue("last")
-	code := c.FormValue("code")
-	grade := c.FormValue("grade")
-
-	if err := users.CreateUser(username, password, firstName, lastName, grade, code); err != nil {
+	if err := users.CreateUser(c.FormValue("username"), c.FormValue("password"), c.FormValue("first"), c.FormValue("last"), c.FormValue("grade"), c.FormValue("code")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func GetUser(c echo.Context) error {
-	user, err := users.GetUser(c.FormValue("id"))
+	user, err := users.GetUser(c.FormValue("username"))
 	if err != nil {
 		return c.JSON(400, err)
 	}
@@ -137,7 +107,7 @@ func DeleteUser(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func UserAuth(username, password string, c echo.Context) (bool, error) {
@@ -159,39 +129,54 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 func CreateMachine(c echo.Context) error {
-	name := c.FormValue("name")
-
-	if err := machines.CreateMachine(name); err != nil {
+	if err := machines.CreateMachine(c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func GetMachines(c echo.Context) error {
-	machines := machines.ReadMachines()
-
-	return c.JSON(200, machines)
+	return c.JSON(200, machines.GetMachines())
 }
 
 func SignOut(c echo.Context) error {
-	if err := machines.SignOut(c.FormValue("id")); err != nil {
+	m := echo.Map{}
+	if err := c.Bind(&m); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	var name string
+	var machineID string
+
+	if name, ok := m["name"]; ok {
+		name = name.(string)
+	} else {
+		return c.String(400, "name key not found")
+	}
+
+	if machineID, ok := m["machineID"]; ok {
+		machineID = machineID.(string)
+	} else {
+		return c.String(400, "machineID key not found")
+	}
+
+	if err := machines.SignOut(name, machineID); err != nil {
+		return c.JSON(400, err)
+	}
+
+	return c.String(200, "success")
 }
 
 func DeleteMachine(c echo.Context) error {
-	if err := machines.DeleteMachine(c.FormValue("id")); err != nil {
+	if err := machines.DeleteMachine(c.FormValue("machineID")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func Authenticate(c echo.Context) error {
-
 	m := echo.Map{}
 	if err := c.Bind(&m); err != nil {
 		return c.JSON(400, err)
@@ -203,26 +188,34 @@ func Authenticate(c echo.Context) error {
 	if code, ok := m["code"]; ok {
 		code = code.(string)
 	} else {
-		return c.JSON(400, "code not found")
+		return c.String(400, "code key not found")
 	}
 
 	if machineID, ok := m["machineID"]; ok {
 		machineID = machineID.(string)
 	} else {
-		return c.JSON(400, "machineID not found")
+		return c.String(400, "machineID key not found")
 	}
 
 	output, err := users.AuthenticateUser(code, machineID)
 
 	if err != nil {
-		output, err = users.AuthenticateAdmin(code, machineID)
-		if err != nil {
-			return c.String(400, "could not authenticate this person")
+		if err.Error() == "user not found" {
+			output, err = users.AuthenticateAdmin(code, machineID)
+			if err != nil {
+				if err.Error() == "user not found" {
+					return c.String(400, "could not authenticate this person")
+				} else {
+					return c.JSON(400, err)
+				}
+			}
+			return c.String(200, output)
+		} else {
+			return c.JSON(400, err)
 		}
-		return c.JSON(200, output)
 	}
 
-	return c.JSON(200, output)
+	return c.String(200, output)
 }
 
 func ReadLog(c echo.Context) error {
@@ -230,27 +223,21 @@ func ReadLog(c echo.Context) error {
 	if err != nil {
 		return c.JSON(400, err)
 	}
-	return c.JSON(200, log)
+	return c.String(200, log)
 }
 
 func AddAction(c echo.Context) error {
-	machineID := c.FormValue("machineID")
-	actionInt := c.FormValue("actionInt")
-
-	if err := machines.AddAction(machineID, actionInt); err != nil {
+	if err := machines.AddAction(c.FormValue("machineID"), c.FormValue("actionID")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }
 
 func DeleteAction(c echo.Context) error {
-	machineID := c.FormValue("machineID")
-	actionInt := c.FormValue("actionInt")
-
-	if err := machines.DeleteAction(machineID, actionInt); err != nil {
+	if err := machines.DeleteAction(c.FormValue("machineID"), c.FormValue("actionID")); err != nil {
 		return c.JSON(400, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.String(200, "success")
 }

@@ -2,7 +2,6 @@ package machines
 
 import (
 	"fmt"
-	"main/components/internal"
 	"main/components/log"
 	"main/components/postgresmanager"
 	"time"
@@ -10,20 +9,19 @@ import (
 
 type Machine struct {
 	ID        string    `json:"id" gorm:"primaryKey"`
-	Name      string    `json:"name" gorm:"uniqueIndex"`
 	InUSE     bool      `json:"in_use" gorm:"index"`
 	Actions   []Action  `json:"actions" gorm:"foreignKey:ActionID"`
 	CreatedAt time.Time `json:"-" gorm:"index"`
 	UpdatedAt time.Time `json:"-" gorm:"index"`
 }
 
-func CreateMachine(name string) error {
+func CreateMachine(id string) error {
 	actions := make([]Action, 0)
-	machine := Machine{ID: internal.GenerateUUID(), Name: name, InUSE: false, Actions: actions}
+	machine := Machine{ID: id, InUSE: false, Actions: actions}
 	return postgresmanager.Save(&machine)
 }
 
-func ReadMachines() []Machine {
+func GetMachines() []Machine {
 	var machines []Machine
 
 	postgresmanager.QueryAll(&machines)
@@ -35,15 +33,14 @@ func (m *Machine) SignIn() ([]Action, error) {
 	return m.Actions, postgresmanager.Update(m, &Machine{InUSE: true})
 }
 
-func SignOut(machineID string) error {
-
+func SignOut(name, machineID string) error {
 	var m *Machine
 	err := postgresmanager.Query(Machine{ID: machineID}, &m)
 	if err != nil {
 		return err
 	}
 
-	log.Log(fmt.Sprintf("User signed out of machine: %s", m.Name))
+	log.Log(fmt.Sprintf("%s signed out of machine: %s", name, m.ID))
 	return postgresmanager.Update(m, &Machine{InUSE: false})
 }
 

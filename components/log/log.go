@@ -8,7 +8,6 @@ import (
 )
 
 func Log(message string) error {
-
 	if _, err := os.Stat("ezcheck-log.txt"); os.IsNotExist(err) {
 		_, err := os.Create("ezcheck-log.txt")
 		if err != nil {
@@ -22,6 +21,13 @@ func Log(message string) error {
 }
 
 func Read() (string, error) {
+	if _, err := os.Stat("ezcheck-log.txt"); os.IsNotExist(err) {
+		_, err := os.Create("ezcheck-log.txt")
+		if err != nil {
+			return "", err
+		}
+	}
+
 	data, err := os.ReadFile("ezcheck-log.txt")
 	if err != nil {
 		return "", err
