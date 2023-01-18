@@ -23,7 +23,6 @@ type Admin struct {
 }
 
 func CreateAdmin(username, password, firstName, lastName, code string) error {
-
 	var a *Admin
 	err := postgresmanager.Query(&Admin{Code: code}, &a)
 
@@ -43,10 +42,9 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 	return err
 }
 
-func GetAdmin(id string) (Admin, error) {
+func GetAdmin(username string) (Admin, error) {
 	var admin Admin
-	
-	err := postgresmanager.Query(&Admin{ID: id}, &admin)
+	err := postgresmanager.Query(&Admin{Username: username}, &admin)
 	if err != nil {
 		return Admin{}, err
 	}
@@ -75,7 +73,7 @@ func CertifyUser(adminID, userID, machineID string) error {
 	}
 
 	err = postgresmanager.CreateAssociation(&user, "Machines", machine)
-	log.Log(fmt.Sprintf("%s authorized user %s to use machine %s", admin.Username, user.Username, machine.Name))
+	log.Log(fmt.Sprintf("admin %s authorized user %s to use machine %s", admin.Username, user.Username, machine.ID))
 
 	return err
 }
@@ -100,28 +98,56 @@ func UncertifyUser(adminID, userID, machineID string) error {
 	}
 
 	err = postgresmanager.DeleteAssociation(&user, "Machines", machine)
-	log.Log(fmt.Sprintf("%s deauthorized user %s to use machine %s", admin.Username, user.Username, machine.Name))
+	log.Log(fmt.Sprintf("admin %s deauthorized user %s from machine %s", admin.Username, user.Username, machine.ID))
 
 	return err
 }
 
 func SearchUsers(query map[string]interface{}) []User {
 	var users []User
+
+	if len(query) == 0 {
+		postgresmanager.QueryAll(&users)
+		for i, u := range users {
+			var machines []*machines.Machine
+			u.Password = ""
+			postgresmanager.ReadAssociation(&u, "Machines", &machines)
+			u.Machines = machines
+			users[i] = u
+		}
+		return users
+	}
+
 	postgresmanager.GroupQuery(query, &users)
 	for i, u := range users {
+		var machines []*machines.Machine
 		u.Password = ""
+		postgresmanager.ReadAssociation(&u, "Machines", &machines)
+		u.Machines = machines
 		users[i] = u
 	}
+	
 	return users
 }
 
 func SearchAdmins(query map[string]interface{}) []Admin {
 	var admins []Admin
+
+	if len(query) == 0 {
+		postgresmanager.QueryAll(&admins)
+		for i, a := range admins {
+			a.Password = ""
+			admins[i] = a
+		}
+		return admins
+	}
+
 	postgresmanager.GroupQuery(query, &admins)
 	for i, a := range admins {
 		a.Password = ""
 		admins[i] = a
 	}
+
 	return admins
 }
 
@@ -129,21 +155,21 @@ func AuthenticateAdmin(code, machineID string) (string, error) {
 	var admin *Admin
 
 	if err := postgresmanager.Query(&Admin{Code: code}, &admin); err != nil {
-		return "{\"error\": \"admin not found\"}", err
+		return "", err
 	}
 
 	var machine *machines.Machine
 	if err := postgresmanager.Query(&machines.Machine{ID: machineID}, &machine); err != nil {
-		return "{\"error\": \"machine not found\"}", nil
+		return "", err
 	}
 
 	actions, err := machine.SignIn()
 	if err != nil {
 		log.Log(fmt.Sprintf("%s failed to sign in to machine %s", admin.Username, machineID))
-		return "{\"error\": \"could not sign in\"}", nil
+		return "", err
 	}
 
-	log.Log(fmt.Sprintf("%s signed in to machine %s", admin.Username, machine.Name))
+	log.Log(fmt.Sprintf("%s %s (Username: %s) signed in to machine %s", admin.FirstName, admin.LastName, admin.Username, machine.ID))
 	return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", admin.FirstName, admin.LastName, actions), nil
 }
 

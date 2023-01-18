@@ -23,7 +23,6 @@ type User struct {
 }
 
 func CreateUser(username, password, firstName, lastName, grade, code string) error {
-
 	var u *User
 	err := postgresmanager.Query(&User{Code: code}, &u)
 
@@ -44,12 +43,11 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 	return err
 }
 
-func GetUser(id string) (User, error) {
-
+func GetUser(username string) (User, error) {
 	var user User
 	var machines []*machines.Machine
 
-	err := postgresmanager.Query(&User{ID: id}, &user)
+	err := postgresmanager.Query(&User{Username: username}, &user)
 
 	if err != nil {
 		return User{}, err
@@ -71,31 +69,35 @@ func AuthenticateUser(code, machineID string) (string, error) {
 	var user *User
 
 	if err := postgresmanager.Query(&User{Code: code}, &user); err != nil {
-		return "{\"error\": \"user not found\"}", err
+		return "", err
 	}
 
 	var machines []*machines.Machine
 	err := postgresmanager.ReadAssociation(&user, "Machines", &machines)
 
 	if err != nil {
-		return "{\"error\": \"could not read user's machines\"}", nil
+		return "", err
 	}
 
 	for _, machine := range machines {
 		if machine.ID == machineID {
 			actions, err := machine.SignIn()
 			if err != nil {
-				return "{\"error\": \"could not sign in\"}", nil
+				return "", err
 			}
-			log.Log(fmt.Sprintf("%s signed in to machine %s", user.Username, machine.Name))
+			log.Log(fmt.Sprintf("%s %s (Username: %s) signed in to machine %s", user.FirstName, user.LastName, user.Username, machine.ID))
 			return fmt.Sprintf("{\"authorized\": true, \"name\": \"%s %s\", actions: %v}", user.FirstName, user.LastName, actions), nil
 		}
 	}
 
-	log.Log(fmt.Sprintf("%s tried to sign in to machine %s", user.Username, machineID))
+	log.Log(fmt.Sprintf("%s failed to sign in to machine %s", user.Username, machineID))
 	return "{\"authorized\": false}", nil
 }
 
 func DeleteUser(id string) error {
+	if postgresmanager.ClearAssociations(&User{ID: id}, "Machines") != nil {
+		return postgresmanager.ClearAssociations(&User{ID: id}, "Machines")
+	}
+	
 	return postgresmanager.Delete(User{ID: id})
 }

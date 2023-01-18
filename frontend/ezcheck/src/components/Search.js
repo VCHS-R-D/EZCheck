@@ -3,42 +3,40 @@ import axios from "axios";
 import {Cookies, useCookies} from 'react-cookie';
 import { Modal, Button } from "react-bootstrap";
 
-var FormData = require('form-data');
-
 function Search(props) {
-    const [cookie, setCookie] = useCookies('user');
+    const [cookie] = useCookies('user');
     const [studentDict, setStudentDict] = React.useState([]);
-    const [show, setShow] = React.useState(props.show);
-    const [studentID, setStudentID] = React.useState("");
 
     useEffect(() => {handleSearch()}, [])
 
-    function handleSelectStudent(id) {
+    function handleSelectStudent(student) {
         props.onHide();
-        console.log(id);
-        setCookie('studentID', id, { path: '/'});
+        localStorage.setItem("student", JSON.stringify(student));
     }
-    function handleSearch(){
-        console.log(cookie.authToken);
+    
+    async function handleSearch(){
         var config = {
-        method: 'post',
-        url: 'http://localhost:8080/admin/search/users',
-        headers: { 
-            'Authorization': `Basic ${cookie.authToken}`
-        }
-        };
-
-        axios(config)
+            method: 'post',
+            url: 'http://localhost:8080/admin/search/users',
+            headers: { 
+              'Authorization': `Basic ${cookie.authToken}`, 
+            }
+          };
+        await axios(config)
         .then(function (response) {
-        console.log(JSON.parse(("[" + response.data.match(/[^[\]]+(?=])/g)[0]) + "]"[0]));
-        setStudentDict(JSON.parse(("[" + response.data.match(/[^[\]]+(?=])/g)[0]) + "]"[0]));
-
+            const res = async () => {
+                setStudentDict(response.data);
+            }
+            res();
         })
         .catch(function (error) {
-        console.log(error);
-
+            const err = async () => {
+                console.log(error.stack);
+            }
+        err();
         });
     }
+
     return (
         <Modal
       {...props}
@@ -46,9 +44,8 @@ function Search(props) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
         >
-
         <Modal.Body>
-            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student.id)}>{student.first} {student.last} ({student.grade})</button>))}
+            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade}) </button>))}
         </Modal.Body>
         </Modal>
     )
