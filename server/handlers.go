@@ -197,13 +197,17 @@ func Authenticate(c echo.Context) error {
 		return c.String(400, "machineID key not found")
 	}
 
+	if codeString == "" || machineIDString == "" {
+		return c.String(400, "code or machineID is empty")
+	}
+
 	output, err := users.AuthenticateUser(codeString, machineIDString)
 
 	if err != nil {
-		if err.Error() == "user not found" {
+		if err.Error() == "record not found" {
 			output, err = users.AuthenticateAdmin(codeString, machineIDString)
 			if err != nil {
-				if err.Error() == "user not found" {
+				if err.Error() == "record not found" {
 					return c.String(400, "could not authenticate this person")
 				} else {
 					return c.JSON(400, err)
