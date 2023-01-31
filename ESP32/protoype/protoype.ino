@@ -56,7 +56,6 @@ void loop() {
     } else if (key) {  
         
       keypad_buffer.concat(key);
-      lcd.print(keypad_buffer);
 
       if (keypad_buffer.length() == 6) {
         WiFiClient client;
@@ -81,4 +80,5 @@ void loop() {
         keypad_buffer = "";
       }
     }
+    lcd.print(keypad_buffer);
 }
