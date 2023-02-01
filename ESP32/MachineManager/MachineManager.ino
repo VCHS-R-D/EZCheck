@@ -1,13 +1,17 @@
+#include <ArduinoJson.h>
 #include <Keypad.h>
 #include <LiquidCrystal.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-
 //HTTP vars
 const char* ssid = "Metro";
 const char* password = "nosoup4u";
-String machineID = "machine1";
-String path = "http://10.124.5.23:8080/auth";
+
+const String machineID = "machine1";
+const String path = "http://10.124.5.254:8080/auth";
+const String signout = "http://10.124.5.254:8080/signout";
+bool signedIn = false;
+String curr_name = "";
 
 //Keypad vars
 const int ROW_NUM = 4; //four rows
@@ -62,68 +66,119 @@ void loop(){
   //handle keypress
   char key = keypad.getKey();
   if (key){
-    digitalWrite(led,LOW);
-    //D -> remove last char
-    if (key=='D') {
-      pass.remove(pass.length()-1);
-      //display
-      lcd.clear();
-      lcd.print(pass);
-    }
-    //* -> submit pass
-    else if (key=='*') {
-      lcd.clear();
-      //make request
-      boolean res = validate(pass);
-      // correct pass
-      if (res) {
-        lcd.print("Hello Mr. Huber");
-        digitalWrite(led,HIGH);
+    //# -> sign out
+    if (signedIn){
+      if (key=='#') {
+        if (machineSignout()) {
+          digitalWrite(led, LOW);
+          lcd.clear();
+          lcd.print("Signed Out");
+          signedIn = !signedIn;
+        }
       }
-      //wrong pass
-      else lcd.print("Denied Access");
-      pass="";
     }
-    //else -> add char to pass
     else {
-      pass.concat(key);
-      //display
-      lcd.clear();
-      lcd.print(pass);
-      Serial.println(pass);
+      //D -> cut pass
+      if (key=='D') {
+        pass.remove(pass.length()-1);
+        //display
+        lcd.clear();
+        lcd.print(pass);
+      }
+      //* -> submit pass
+      else if (key=='*') {
+        lcd.clear();
+        //make request
+        boolean res = validate(pass);
+        // correct pass
+        if (res) {
+          lcd.clear();
+          String message = "Hello ";
+          message.concat(curr_name);
+          lcd.print(message);
+          digitalWrite(led,HIGH);
+          signedIn = true;
+        }
+        //wrong pass
+        else lcd.print("Denied Access");
+        pass="";
+      }
+      //else -> add char to pass
+      else {
+        pass.concat(key);
+        //display
+        lcd.clear();
+        lcd.print(pass);
+        Serial.println(pass);
+      }
     }
   }
 }
 
 boolean validate(String pass){
-  boolean ret = false;
-  //connected
+  //connected 
   if(WiFi.status() == WL_CONNECTED){
     //confirmation
     lcd.clear();
-    lcd.print("Sending pin: "+pass);
+    lcd.print("Sending pin");
     //send post request
     WiFiClient client;
     HTTPClient http;
     http.begin(client, path);
     http.addHeader("Content-Type", "application/json");
-    int httpResponseCode = http.POST("{\"code\":\""+pass+"\",\"machineID\":\""+machineID+"\"}");
+    int httpResponseCode = http.POST("{\"code\":\"" + pass + "\",\"machineID\":\"" + machineID+"\"}");
     //valid request
-    if (httpResponseCode>0) {
-      ret = true;
+    String response = http.getString();
+    DynamicJsonDocument response_data(1024);
+    deserializeJson(response_data, response);
+    bool auth = response_data["authorized"];
+    
+    if (auth) {
+      String temp_name = response_data["name"];
+      curr_name = temp_name;
+      http.end();
+      pass = "";
+      return true;
     }
     else {
       lcd.clear();
       lcd.print("Error: ");
       lcd.print(httpResponseCode);
+      Serial.println(httpResponseCode);
+      curr_name = "";
+      http.end();
+      pass = "";
+      return false;
     }
     // Free resources
-    http.end();
   }
-  //disconnected
-  else {
-    lcd.clear();
-    lcd.print("WiFi Disconnected");
+  return false;
+}
+
+boolean machineSignout(){
+  //connected 
+  if(WiFi.status() == WL_CONNECTED){
+    //send post request
+    WiFiClient client;
+    HTTPClient http;
+    http.begin(client, signout);
+    http.addHeader("Content-Type", "application/json");
+    int httpResponseCode = http.POST("{\"name\":\"" + curr_name + "\",\"machineID\":\"" + machineID+"\"}");
+    
+    if (httpResponseCode == 200) {
+      return true;
+    }
+    else {
+      lcd.clear();
+      lcd.print("Error Signing Out: ");
+      lcd.print(httpResponseCode);
+      Serial.println(httpResponseCode);
+      curr_name = "";
+      http.end();
+      pass = "";
+      return false;
+    }
+    // Free resources
   }
-  return ret;
+  return false;
 }
