@@ -9,14 +9,14 @@ import Student from './pages/Student.js';
 function App() {
 
   return (
-    <div className="App">
-       <BrowserRouter>
+    <div className="App h-full">
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing/>} />
-          <Route path="/student" element={<Student/>} />
-          <Route path="/admin" element={<Admin/>} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/student" element={<Student />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
-       </BrowserRouter>
+      </BrowserRouter>
     </div>
   );
 }

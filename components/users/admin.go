@@ -26,8 +26,10 @@ func CreateAdmin(username, password, firstName, lastName, code string) error {
 	var a *Admin
 	err := postgresmanager.Query(&Admin{Code: code}, &a)
 
-	if err.Error() != "record not found" {
-		return err
+	if err != nil {
+		if err.Error() != "record not found" {
+			return err
+		}
 	}
 
 	hashedPassword, err := HashPassword(password)

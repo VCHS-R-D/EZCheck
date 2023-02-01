@@ -146,22 +146,22 @@ func SignOut(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	var name string
-	var machineID string
+	var nameString string
+	var machineIDString string
 
 	if name, ok := m["name"]; ok {
-		name = name.(string)
+		nameString = name.(string)
 	} else {
 		return c.String(400, "name key not found")
 	}
 
 	if machineID, ok := m["machineID"]; ok {
-		machineID = machineID.(string)
+		machineIDString = machineID.(string)
 	} else {
 		return c.String(400, "machineID key not found")
 	}
 
-	if err := machines.SignOut(name, machineID); err != nil {
+	if err := machines.SignOut(nameString, machineIDString); err != nil {
 		return c.JSON(400, err)
 	}
 
@@ -182,28 +182,32 @@ func Authenticate(c echo.Context) error {
 		return c.JSON(400, err)
 	}
 
-	var code string
-	var machineID string
+	var codeString string
+	var machineIDString string
 
 	if code, ok := m["code"]; ok {
-		code = code.(string)
+		codeString = code.(string)
 	} else {
 		return c.String(400, "code key not found")
 	}
 
 	if machineID, ok := m["machineID"]; ok {
-		machineID = machineID.(string)
+		machineIDString = machineID.(string)
 	} else {
 		return c.String(400, "machineID key not found")
 	}
 
-	output, err := users.AuthenticateUser(code, machineID)
+	if codeString == "" || machineIDString == "" {
+		return c.String(400, "code or machineID is empty")
+	}
+
+	output, err := users.AuthenticateUser(codeString, machineIDString)
 
 	if err != nil {
-		if err.Error() == "user not found" {
-			output, err = users.AuthenticateAdmin(code, machineID)
+		if err.Error() == "record not found" {
+			output, err = users.AuthenticateAdmin(codeString, machineIDString)
 			if err != nil {
-				if err.Error() == "user not found" {
+				if err.Error() == "record not found" {
 					return c.String(400, "could not authenticate this person")
 				} else {
 					return c.JSON(400, err)
