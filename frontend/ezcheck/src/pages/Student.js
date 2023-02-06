@@ -1,6 +1,8 @@
 import React from 'react'
 import { useCookies, removeCookie} from 'react-cookie';
 import { useNavigate } from "react-router-dom";
+import "../styles/Student.css"
+import Grid from '@mui/material/Grid'
 
 export default function Student() {
     const [cookie, setCookie, removeCookie] = useCookies('user');
@@ -17,16 +19,35 @@ export default function Student() {
     }
 
     function renderStudent(){
-        //TODO: not working on initial login
         if(localStorage.getItem("student") != null){
             return(
                 <React.Fragment>
-                    <div>{student.first}</div>
-                    <div>{student.last}</div>
-                    <div>{student.username}</div>
-                    <div>{student.grade}</div>
-                    <div>{student.code}</div>
-                    {student.Machines.map(machine => (<div key={machine.id}>MACHINE ID: {String(machine.id)}</div>))}
+                    <React.Fragment>
+                        <br></br><br></br>
+                    <div className="userInfo">
+                    <h1 className="info">User Information</h1>
+                    <div className="grid">
+                        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.first} {student.last}<br></br><div className="tag">Full Name</div></div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.username}<br></br><div className="tag">Username</div></div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.grade}th Grade<br></br><div className="tag">Grade</div></div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.code}<br></br><div className="tag">Code</div></div>
+                            </Grid>
+                            </Grid>
+                    <br></br>
+                    <div className="tagValue">{student.id}<br></br><div className="tag">Student ID</div></div>
+                    </div>
+                    <h1 className="machineInfo">Machines Added: </h1>
+                    {student.Machines.map(machine => (<div className="machine" key={machine.id}>Machine ID: {String(machine.id)}</div>))}
+                    </div>
+                </React.Fragment>
                 </React.Fragment>
             )
         }
@@ -42,7 +63,7 @@ export default function Student() {
     return(
         <div>
 
-            <button onClick={logout}>Logout</button>
+            <button className="logout" onClick={logout}>Logout</button>
 
             {renderStudent()}
         </div>
