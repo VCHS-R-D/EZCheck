@@ -48,13 +48,15 @@ input {
     border-radius: 5px;
     font-family: Radio Canada;
     font-weight: normal;
-    color: gray;
+    color: black;
     width: 90%;
     height: 30px;
     margin-bottom: 10px;
     margin-left: 4%;
 }
-
+::placeholder {
+    color: gray
+}
 .submit {
     background-color: white;
     font-size: 15px;
