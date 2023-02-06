@@ -5,8 +5,10 @@ import Search from '../components/Search.js';
 import Logs from '../components/logs.js';
 import Select from 'react-select';
 import axios from "axios";
+import '../styles/Admin.css'
 import {Cookies, useCookies, removeCookie} from 'react-cookie';
 import { useNavigate } from "react-router-dom";
+import Grid from '@mui/material/Grid';
 
 export default function Admin() {
     const [show, setShow] = React.useState(false);
@@ -215,21 +217,37 @@ export default function Admin() {
     }
 
     function renderStudent(){
-        //TODO: Delete User not Working
         if(localStorage.getItem("student") != null && isLoading == false){
             return(
                 <React.Fragment>
-                    <div>FIRST NAME: {student.first}</div>
-                    <div>LAST NAME: {student.last}</div>
-                    <div>USERNAME: {student.username}</div>
-                    <div>GRADE: {student.grade}</div>
-                    <div>CODE: {student.code}</div>
-                    <div>ID: {student.id}</div>
-                    {student.Machines.map(machine => (<div key={machine.id}>MACHINE ID: {String(machine.id)}</div>))}
-                    <Select options={options} onChange={handleOptionChange} noOptionsMessage={() => "name not found"} />
-                    <button onClick={() => {handleCertify()}}>Certify</button>
-                    <button onClick={() => {handleUncertify()}}>Uncertify</button>
-                    <button onClick={() => {handleDelete()}}>Delete User</button>
+                    <div className="userInfo">
+                    <h1 className="info">User Information</h1>
+                    <div className="grid">
+                        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.first} {student.last}<br></br><div className="tag">Full Name</div></div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.username}<br></br><div className="tag">Username</div></div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.grade}th Grade<br></br><div className="tag">Grade</div></div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <div className="tagValue">{student.code}<br></br><div className="tag">Code</div></div>
+                            </Grid>
+                            </Grid>
+                    <br></br>
+                    <div className="tagValue">{student.id}<br></br><div className="tag">Student ID</div></div>
+                    </div>
+                    <h1 className="machineInfo">Machines Added: </h1>
+                    {student.Machines.map(machine => (<div className="machine" key={machine.id}>Machine ID: {String(machine.id)}</div>))}
+                    <Select className="searchMachine" options={options} onChange={handleOptionChange} noOptionsMessage={() => "name not found"} />
+                    <br></br>
+                    <button className="certify" onClick={() => {handleCertify()}}>Certify</button>
+                    <button className="decertify" onClick={() => {handleUncertify()}}>Uncertify</button>
+                    <button className="delete" onClick={() => {handleDelete()}}>Delete User</button>
+                    </div>
                 </React.Fragment>
             )
         }
@@ -253,11 +271,11 @@ export default function Admin() {
     
     return(
         <div>
-            <button onClick={() => viewSearch()}>Search</button>
-            <Search show={show} onHide={() => {setShow(false);}} />
-            <button onClick={viewMachines}>Machines</button>
-            <button onClick={viewLogs}>Logs</button>
-            <button onClick={logout}>Logout</button>
+            <button className="adminButton" onClick={() => viewSearch()}>Search</button>
+            <Search className="searchModal" show={show} onHide={() => {setShow(false);}} />
+            <button className="adminButton" onClick={viewMachines}>Machines</button>
+            <button className="adminButton" onClick={viewLogs}>Logs</button>
+            <button className="logout" onClick={logout}>Logout</button>
             {renderPages()}
             {renderStudent()}
         </div>

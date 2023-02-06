@@ -4,7 +4,9 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {useCookies} from 'react-cookie';
 import { Buffer } from 'buffer'
+import '../styles/Landing.css';
 var FormData = require('form-data');
+
 
 const customStyles = {
     content: {
@@ -182,21 +184,29 @@ export default function Landing() {
                         <div>
                             <form>
                             <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                            <br></br>
                                 <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
+                                <br></br>
                             </form>
-                            <button onClick={handleAdminSignin}>Submit</button>
+                            <button className="submit" onClick={handleAdminSignin}>Submit</button>
                         </div>
                     ) : (
                         <span>
                             <form>
                                 <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="first name" onChange={(event) => {setFirstName(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="last name" onChange={(event) => {setLastName(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="code" onChange={(event) => {setCode(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="admin code" onChange={(event) => {setAdminCode(event.target.value)}}></input>
+                                <br></br>
                             </form>
-                            <button onClick={handleAdminCreate}>Submit</button>
+                            <button className="submit" onClick={handleAdminCreate}>Submit</button>
                         </span>
                     )
                     }
@@ -211,21 +221,29 @@ export default function Landing() {
                         <span>
                             <form>
                                 <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
+                                <br></br>
                             </form>
-                            <button onClick={handleUserSignin}>Submit</button>
+                            <button className="submit" onClick={handleUserSignin}>Submit</button>
                         </span>
                     ) : (
                         <span>
                             <form>
                                 <input placeholder="username" onChange={(event) => {setUsername(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="password" onChange={(event) => {setPassword(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="first name" onChange={(event) => {setFirstName(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="last name" onChange={(event) => {setLastName(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="code" onChange={(event) => {setCode(event.target.value)}}></input>
+                                <br></br>
                                 <input placeholder="grade" onChange={(event) => {setGrade(event.target.value)}}></input>
+                                <br></br>
                             </form>
-                            <button onClick={handleStudentCreate}>Submit</button>
+                            <button className="submit" onClick={handleStudentCreate}>Submit</button>
                         </span>
                     )
                     }
@@ -236,18 +254,23 @@ export default function Landing() {
     
     return (
         <div>
-            <button onClick={adminSignup}>Admin Sign Up</button>
-            <button onClick={adminLogin}>Admin Log In</button>
-            <button onClick={studentSignup}>Student Sign Up</button>
-            <button onClick={studentLogin}>Student Log In</button>
-            <Modal
+            <div className="buttons">
+                EZCheck
+            <button className="button" onClick={adminSignup}>Admin Sign Up</button>
+            <br></br>
+            <button className="button" onClick={adminLogin}>Admin Log In</button>
+            <br></br>
+            <button className="button" onClick={studentSignup}>Student Sign Up</button>
+            <br></br>
+            <button className="button" onClick={studentLogin}>Student Log In</button>
+            </div>
+            <Modal className="modal"
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
                 contentLabel="Example Modal"
             >
-                <button onClick={closeModal}>close</button>
-                <h1>Login</h1>
+                <button className="close" onClick={closeModal}>CLOSE</button>
                 {renderForm()}
             </Modal>
                 </div>

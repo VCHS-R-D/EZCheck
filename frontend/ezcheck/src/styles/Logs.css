@@ -1,0 +1,18 @@
+.logs {
+    background-color: black;
+    width: 95%;
+    height: 600px;
+    margin-left: 2%;
+    overflow-y: scroll;
+    color: greenyellow;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.logTitle{
+    text-align: center;
+    font-family: Radio Canada;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}

@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from "axios";
+import "../styles/Logs.css"
 
 function Logs() {
   const [logDisplay, setLogDisplay] = React.useState("")
@@ -22,8 +23,8 @@ function Logs() {
     }
   return (
     <>
-    <div>logs</div>
-    <div>
+    <div className="logTitle">EZCheck Logs</div>
+    <div className="logs">
       {logDisplay}
     </div>
     </>

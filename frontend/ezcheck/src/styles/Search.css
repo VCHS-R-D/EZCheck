@@ -1,0 +1,16 @@
+button {
+    border-style: none;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: Radio Canada;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px 1px rgb(187, 187, 187);
+}
+
+.grade {
+    font-weight: normal;
+    color: gray;
+    margin-left: 0px;
+}

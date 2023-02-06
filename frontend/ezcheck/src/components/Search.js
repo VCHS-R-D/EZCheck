@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import axios from "axios";
+import '../styles/Search.css';
 import {Cookies, useCookies} from 'react-cookie';
 import { Modal, Button } from "react-bootstrap";
 
@@ -45,7 +46,7 @@ function Search(props) {
       centered
         >
         <Modal.Body>
-            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade}) </button>))}
+            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} <br></br><div className="grade">{student.grade}th Grade</div> </button>))}
         </Modal.Body>
         </Modal>
     )
