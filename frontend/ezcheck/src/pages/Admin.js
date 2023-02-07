@@ -1,24 +1,24 @@
 import React from 'react'
-import Modal from 'react-modal';
 import MachineList from '../components/MachineList';
 import Search from '../components/Search.js';
 import Logs from '../components/logs.js';
 import Select from 'react-select';
 import axios from "axios";
-import '../styles/Admin.css'
-import {Cookies, useCookies, removeCookie} from 'react-cookie';
+import '../styles/Admin.css';
+import {useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 
 export default function Admin() {
     const [show, setShow] = React.useState(false);
-    const [cookie, setCookie, removeCookie] = useCookies('user');
+    const [cookie, removeCookie] = useCookies('user');
     const [currentPage, setCurrentPage] = React.useState("");
     const student = JSON.parse(localStorage.getItem("student"));
     const [options, setOptions] = React.useState([""]);
     const [selectedOption, setSelectedOption] = React.useState("");
     const [isLoading, setLoading] = React.useState(false);
     const navigate = useNavigate();
+    // eslint-disable-next-line
     React.useEffect(() => {onStart()}, [])
     
     function handleOptionChange(selectedOption)
@@ -194,7 +194,6 @@ export default function Admin() {
                     <div>
                         <MachineList></MachineList>
                     </div>
-                    
                 </React.Fragment>
             )
         }
@@ -217,36 +216,36 @@ export default function Admin() {
     }
 
     function renderStudent(){
-        if(localStorage.getItem("student") != null && isLoading == false){
+        if(localStorage.getItem("student") != null && isLoading === false){
             return(
                 <React.Fragment>
                     <div className="userInfo">
-                    <h1 className="info">User Information</h1>
-                    <div className="grid">
-                        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                            <Grid item xs={6}>
-                                <div className="tagValue">{student.first} {student.last}<br></br><div className="tag">Full Name</div></div>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <div className="tagValue">{student.username}<br></br><div className="tag">Username</div></div>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <div className="tagValue">{student.grade}th Grade<br></br><div className="tag">Grade</div></div>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <div className="tagValue">{student.code}<br></br><div className="tag">Code</div></div>
-                            </Grid>
-                            </Grid>
-                    <br></br>
-                    <div className="tagValue">{student.id}<br></br><div className="tag">Student ID</div></div>
-                    </div>
-                    <h1 className="machineInfo">Machines Added: </h1>
-                    {student.Machines.map(machine => (<div className="machine" key={machine.id}>Machine ID: {String(machine.id)}</div>))}
-                    <Select className="searchMachine" options={options} onChange={handleOptionChange} noOptionsMessage={() => "name not found"} />
-                    <br></br>
-                    <button className="certify" onClick={() => {handleCertify()}}>Certify</button>
-                    <button className="decertify" onClick={() => {handleUncertify()}}>Uncertify</button>
-                    <button className="delete" onClick={() => {handleDelete()}}>Delete User</button>
+                        <h1 className="info">User Information</h1>
+                        <div className="grid">
+                            <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                                <Grid item xs={6}>
+                                    <div className="tagValue">{student.first} {student.last}<br></br><div className="tag">Full Name</div></div>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <div className="tagValue">{student.username}<br></br><div className="tag">Username</div></div>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <div className="tagValue">{student.grade}th Grade<br></br><div className="tag">Grade</div></div>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <div className="tagValue">{student.code}<br></br><div className="tag">Code</div></div>
+                                </Grid>
+                                </Grid>
+                        <br></br>
+                        <div className="tagValue">{student.id}<br></br><div className="tag">Student ID</div></div>
+                        </div>
+                        <h1 className="machineInfo">Machines Added: </h1>
+                        {student.Machines.map(machine => (<div className="machine" key={machine.id}>Machine ID: {String(machine.id)}</div>))}
+                        <Select className="searchMachine" options={options} onChange={handleOptionChange} noOptionsMessage={() => "name not found"} />
+                        <br></br>
+                        <button className="certify" onClick={() => {handleCertify()}}>Certify</button>
+                        <button className="decertify" onClick={() => {handleUncertify()}}>Uncertify</button>
+                        <button className="delete" onClick={() => {handleDelete()}}>Delete User</button>
                     </div>
                 </React.Fragment>
             )
