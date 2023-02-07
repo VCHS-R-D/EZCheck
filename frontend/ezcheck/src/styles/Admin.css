@@ -41,7 +41,7 @@
 .userInfo {
     width: 97.5%;
     background-color: white;
-    height: 500px;
+    height: fit-content;
     border-radius: 15px;
     margin: 20px;
     box-shadow: 2px 2px 2px 2px rgb(187, 187, 187);

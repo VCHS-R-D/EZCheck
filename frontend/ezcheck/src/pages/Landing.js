@@ -1,6 +1,6 @@
 import React from 'react'
 import Modal from 'react-modal';
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {useCookies} from 'react-cookie';
 import { Buffer } from 'buffer'
@@ -31,7 +31,7 @@ export default function Landing() {
     const [grade, setGrade] = React.useState("");
     const [adminCode, setAdminCode] = React.useState("");
     const navigate = useNavigate();
-    const [cookie, setCookie,removeCookie] = useCookies('user');
+    const [setCookie] = useCookies('user');
 
     function adminSignup() {
         setUserType("admin");
@@ -256,13 +256,13 @@ export default function Landing() {
         <div>
             <div className="buttons">
                 EZCheck
-            <button className="button" onClick={adminSignup}>Admin Sign Up</button>
-            <br></br>
-            <button className="button" onClick={adminLogin}>Admin Log In</button>
-            <br></br>
-            <button className="button" onClick={studentSignup}>Student Sign Up</button>
-            <br></br>
-            <button className="button" onClick={studentLogin}>Student Log In</button>
+                <button className="button" onClick={adminSignup}>Admin Sign Up</button>
+                <br></br>
+                <button className="button" onClick={adminLogin}>Admin Log In</button>
+                <br></br>
+                <button className="button" onClick={studentSignup}>Student Sign Up</button>
+                <br></br>
+                <button className="button" onClick={studentLogin}>Student Log In</button>
             </div>
             <Modal className="modal"
                 isOpen={modalIsOpen}
@@ -273,6 +273,6 @@ export default function Landing() {
                 <button className="close" onClick={closeModal}>CLOSE</button>
                 {renderForm()}
             </Modal>
-                </div>
+        </div>
     )
 }
