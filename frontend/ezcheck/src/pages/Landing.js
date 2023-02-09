@@ -31,7 +31,9 @@ export default function Landing() {
     const [grade, setGrade] = React.useState("");
     const [adminCode, setAdminCode] = React.useState("");
     const navigate = useNavigate();
-    const [setCookie] = useCookies('user');
+    // eslint-disable-next-line
+    const [cookie, setCookie,removeCookie] = useCookies('user');
+
 
     function adminSignup() {
         setUserType("admin");

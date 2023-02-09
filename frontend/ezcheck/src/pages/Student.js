@@ -5,7 +5,8 @@ import "../styles/Student.css"
 import Grid from '@mui/material/Grid'
 
 export default function Student() {
-    const [removeCookie] = useCookies('user');
+    // eslint-disable-next-line
+    const [cookie, setCookie,removeCookie] = useCookies('user');
     const student = JSON.parse(localStorage.getItem("student"));
     const navigate = useNavigate();
     
