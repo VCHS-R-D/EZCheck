@@ -1,9 +1,8 @@
 package main
 
 import (
-	"main/components/machines"
 	"main/components/postgresmanager"
-	"main/components/users"
+	"main/components/types"
 	"main/server"
 	"os"
 
@@ -26,17 +25,22 @@ func main() {
 		panic(err)
 	}
 
-	err = postgresmanager.AutoCreateStruct(users.Admin{})
+	err = postgresmanager.AutoCreateStruct(types.Admin{})
 	if err != nil {
 		panic(err)
 	}
 
-	err = postgresmanager.AutoCreateStruct(users.User{})
+	err = postgresmanager.AutoCreateStruct(types.User{})
 	if err != nil {
 		panic(err)
 	}
 
-	err = postgresmanager.AutoCreateStruct(machines.Machine{})
+	err = postgresmanager.AutoCreateStruct(types.Machine{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = postgresmanager.AutoCreateStruct(types.Machine{})
 	if err != nil {
 		panic(err)
 	}
