@@ -6,25 +6,12 @@ import (
 	"main/components/log"
 	"main/components/machines"
 	"main/components/postgresmanager"
-	"time"
+	"main/components/types"
 )
 
-type User struct {
-	ID        string              `json:"id" gorm:"primaryKey"`
-	Username  string              `json:"username" gorm:"uniqueIndex"`
-	Password  string              `json:"password"`
-	FirstName string              `json:"first" gorm:"index"`
-	LastName  string              `json:"last" gorm:"index"`
-	Grade     string              `json:"grade" gorm:"index"`
-	Code      string              `json:"code" gorm:"uniqueIndex"`
-	Machines  []*machines.Machine `gorm:"many2many:users_machines"`
-	CreatedAt time.Time           `json:"-" gorm:"index"`
-	UpdatedAt time.Time           `json:"-" gorm:"index"`
-}
-
 func CreateUser(username, password, firstName, lastName, grade, code string) error {
-	var u *User
-	err := postgresmanager.Query(&User{Code: code}, &u)
+	var u *types.User
+	err := postgresmanager.Query(&types.User{Code: code}, &u)
 
 	if err != nil {
 		if err.Error() != "record not found" {
@@ -37,20 +24,20 @@ func CreateUser(username, password, firstName, lastName, grade, code string) err
 		return err
 	}
 
-	user := User{ID: internal.GenerateUUID(), Username: username, Password: hashedPassword, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
+	user := types.User{ID: internal.GenerateUUID(), Username: username, Password: hashedPassword, FirstName: firstName, LastName: lastName, Grade: grade, Code: code}
 	err = postgresmanager.Save(&user)
 
 	return err
 }
 
-func GetUser(username string) (User, error) {
-	var user User
-	var machines []*machines.Machine
+func GetUser(username string) (types.User, error) {
+	var user types.User
+	var machines []*types.Machine
 
-	err := postgresmanager.Query(&User{Username: username}, &user)
+	err := postgresmanager.Query(&types.User{Username: username}, &user)
 
 	if err != nil {
-		return User{}, err
+		return types.User{}, err
 	}
 
 	user.Password = ""
@@ -66,22 +53,22 @@ func GetUser(username string) (User, error) {
 }
 
 func AuthenticateUser(code, machineID string) (string, error) {
-	var user *User
+	var user *types.User
 
-	if err := postgresmanager.Query(&User{Code: code}, &user); err != nil {
+	if err := postgresmanager.Query(&types.User{Code: code}, &user); err != nil {
 		return "", err
 	}
 
-	var machines []*machines.Machine
-	err := postgresmanager.ReadAssociation(&user, "Machines", &machines)
+	var myMachines []*types.Machine
+	err := postgresmanager.ReadAssociation(&user, "Machines", &myMachines)
 
 	if err != nil {
 		return "", err
 	}
 
-	for _, machine := range machines {
+	for _, machine := range myMachines {
 		if machine.ID == machineID {
-			actions, err := machine.SignIn()
+			actions, err := machines.SignIn(machineID)
 			if err != nil {
 				return "", err
 			}
@@ -95,9 +82,10 @@ func AuthenticateUser(code, machineID string) (string, error) {
 }
 
 func DeleteUser(id string) error {
-	if postgresmanager.ClearAssociations(&User{ID: id}, "Machines") != nil {
-		return postgresmanager.ClearAssociations(&User{ID: id}, "Machines")
+	err := postgresmanager.ClearAssociations(&types.User{ID: id}, "Machines")
+	if err != nil {
+		return postgresmanager.ClearAssociations(&types.User{ID: id}, "Machines")
 	}
-	
-	return postgresmanager.Delete(User{ID: id})
+
+	return postgresmanager.Delete(types.User{ID: id})
 }
