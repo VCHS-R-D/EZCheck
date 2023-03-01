@@ -1,0 +1,139 @@
+.logout{
+    font-family: Radio Canada;
+    font-size: 30px;
+    height: 40px;
+    position: absolute;
+    right: 10px;
+    color: white;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    background-color: red;
+    border-style:none;
+    border-radius: 5px;
+}
+
+.adminButton {
+    font-family: Radio Canada;
+    font-size: 30px;
+    height: 40px;
+    color: color;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    background-color: white;
+    border-style:none;
+    border-radius: 5px;
+    margin-right: 10px;
+    margin-left: 5px;
+    box-shadow: 2px 2px 2px 2px rgb(187, 187, 187);
+}
+
+.searchModal {
+    position: fixed;
+    width: 100%;
+    z-index: 1040;
+    background-color: white;
+    height: 800px;
+    border-radius: 15px;
+}
+
+.userInfo {
+    width: 97.5%;
+    background-color: white;
+    height: fit-content;
+    border-radius: 15px;
+    margin: 20px;
+    box-shadow: 2px 2px 2px 2px rgb(187, 187, 187);
+}
+
+.tagValue{
+    font-weight: bold;
+    font-family: Radio Canada;
+    font-size: 17px;
+}
+
+.tag{
+    font-weight: normal;
+    color: gray;
+    margin-left: 0px;
+    font-size: 15px;
+}
+
+.grid{
+    background-color: white;
+    margin: 30px;
+}
+
+.info {
+    font-family: Radio Canada;
+    margin: 10px;
+}
+
+.machineInfo {
+    font-family: Radio Canada;
+    margin: 10px;
+    font-size: 25px;
+}
+
+.machine {
+    font-family: Radio Canada;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+.searchMachine {
+    margin-left: 10px;
+    width: 98%;
+    font-family: Radio Canada;
+    color: black;
+}
+
+.certify {
+    font-family: Radio Canada;
+    font-size: 25px;
+    height: 40px;
+    color: color;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 10px;
+    background-color: rgb(11, 255, 3);
+    border-style:none;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: white;
+}
+
+.decertify {
+    font-family: Radio Canada;
+    font-size: 25px;
+    height: 40px;
+    color: color;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 10px;
+    background-color: rgb(255, 136, 0);
+    border-style:none;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: white;
+}
+
+.delete {
+    font-family: Radio Canada;
+    font-size: 25px;
+    height: 40px;
+    color: color;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 10px;
+    background-color: red;
+    border-style:none;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: white;
+}

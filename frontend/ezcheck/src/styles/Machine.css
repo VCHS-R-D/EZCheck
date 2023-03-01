@@ -1,0 +1,60 @@
+.input{
+    background-color: white;
+    width: 70%;
+    margin-left: 10px;
+    color: black;
+    font-size: 15px;
+    border-style:solid;
+    border-radius: 5px;
+    height: 35px;
+    border-color: black;
+}
+
+.create{
+    font-family: Radio Canada;
+    font-size: 25px;
+    height: 40px;
+    color: color;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-left: 10px;
+    background-color: rgb(3, 238, 255);
+    border-style:none;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: white;
+    box-shadow: none;
+}
+
+.delete {
+    font-family: Radio Canada;
+    font-size: 25px;
+    height: 30px;
+    color: color;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin-left: 10px;
+    background-color: red;
+    border-style:none;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: white;
+}
+
+.machineItem{
+    font-size: 20px;
+    margin-left: 10px;
+    font-family: Radio Canada;
+    margin-bottom: 10px;
+    background-color: rgb(216, 216, 216);
+    width:fit-content;
+    padding: 5px;
+    border-radius: 10px;
+
+}
+
+.inUse {
+    padding: 5px;
+    border-radius: 5px;
+}

@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react'
 import axios from "axios";
-import {Cookies, useCookies} from 'react-cookie';
-import { Modal, Button } from "react-bootstrap";
+import '../styles/Search.css';
+import {useCookies} from 'react-cookie';
+import { Modal } from "react-bootstrap";
 
 function Search(props) {
     const [cookie] = useCookies('user');
     const [studentDict, setStudentDict] = React.useState([]);
-
+    // eslint-disable-next-line
     useEffect(() => {handleSearch()}, [])
 
     function handleSelectStudent(student) {
@@ -39,13 +40,13 @@ function Search(props) {
 
     return (
         <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
+            {...props}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
         >
         <Modal.Body>
-            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} ({student.grade}) </button>))}
+            {studentDict.map(student => (<button key={student.id} onClick={() => handleSelectStudent(student)}>{student.first} {student.last} <br></br><div className="grade">{student.grade}th Grade</div> </button>))}
         </Modal.Body>
         </Modal>
     )

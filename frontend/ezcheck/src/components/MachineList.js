@@ -1,10 +1,13 @@
 import React from 'react'
+// eslint-disable-next-line
 import {Cookies, useCookies} from 'react-cookie';
 import axios from "axios";
+import "../styles/Machine.css";
 
 function MachineList(){
   const [machineList, setMachineList] = React.useState([]);
   const [machineID, setMachineID] = React.useState("");
+  const delMachine = React.useRef("");
   const [cookie] = useCookies('user');
 
   React.useEffect(() => {getMachines()}, [])
@@ -48,7 +51,7 @@ function MachineList(){
 
     function deleteMachine() {
       var formdata = new FormData();
-      formdata.append("machineID", machineID);
+      formdata.append("machineID", String(delMachine.current));
       var config = {
       method: 'delete',
       url: 'http://localhost:8080/admin/machines/delete',
@@ -71,10 +74,10 @@ function MachineList(){
       <>
       <div>
       <form>
-        <input placeholder="Machine ID" onChange={(event) => {setMachineID(event.target.value)}}></input>
+        <input className="input" placeholder="Machine ID" onChange={(event) => {setMachineID(event.target.value)}}></input>
       </form>
-      <button onClick={() => {createMachine()}}>Create Machine</button>
-      {machineList.map(machine => (<div key={machine.id}>{machine.id} in-use: {String(machine.in_use)} actions: ({machine.actions}) <button key={machine.id} onClick={() => {setMachineID(machine.id); console.log(machine.id); deleteMachine();}}>DELETE</button></div>))}
+      <button className="create" onClick={() => {createMachine()}}>Create Machine</button>
+      {machineList.map(machine => (<div className="machineItem" key={machine.id}>{machine.id} in-use: {<span style={String(machine.in_use) === "true" ? {backgroundColor: "#b5ffc0", color:"#00ff26"} : {backgroundColor: "#ffb8b8", color:"#ff0000"}}className="inUse">{String(machine.in_use)}</span>} actions: ({machine.actions}) <button className="delete" key={machine.id} onClick={() => {delMachine.current = String(machine.id); deleteMachine();}}>Delete</button></div>))}
       </div>
     </>
     )
