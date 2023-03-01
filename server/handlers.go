@@ -4,6 +4,7 @@ import (
 	"main/components/log"
 	"main/components/machines"
 	"main/components/postgresmanager"
+	"main/components/types"
 	"main/components/users"
 	"os"
 
@@ -74,8 +75,8 @@ func DeleteAdmin(c echo.Context) error {
 }
 
 func AdminAuth(username, password string, c echo.Context) (bool, error) {
-	var admin users.Admin
-	if err := postgresmanager.Query(users.Admin{Username: username}, &admin); err != nil {
+	var admin *types.Admin
+	if err := postgresmanager.Query(types.Admin{Username: username}, &admin); err != nil {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, admin.Password) {
@@ -111,8 +112,8 @@ func DeleteUser(c echo.Context) error {
 }
 
 func UserAuth(username, password string, c echo.Context) (bool, error) {
-	var user users.User
-	if err := postgresmanager.Query(users.User{Username: username}, &user); err != nil {
+	var user *types.User
+	if err := postgresmanager.Query(types.User{Username: username}, &user); err != nil {
 		return false, c.JSON(400, err)
 	} else {
 		if CheckPasswordHash(password, user.Password) {
