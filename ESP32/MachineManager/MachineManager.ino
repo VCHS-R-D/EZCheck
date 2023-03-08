@@ -8,8 +8,9 @@ const char* ssid = "Metro";
 const char* password = "nosoup4u";
 
 const String machineID = "machine1";
-const String path = "http://10.124.5.254:8080/auth";
-const String signout = "http://10.124.5.254:8080/signout";
+const String k = "http://10.124.6.136:8080";
+const String path = k+"/auth";
+const String signout = k+"/signout";
 bool signedIn = false;
 String curr_name = "";
 
