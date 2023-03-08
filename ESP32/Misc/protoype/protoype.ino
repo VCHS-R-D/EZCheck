@@ -3,8 +3,8 @@
 #include <Keypad.h>
 #include <LiquidCrystal.h>
 
-const char* ssid = "Metro";
-const char* pass = "nosoup4u";
+const char* ssid = "***REMOVED***";
+const char* pass = "***REMOVED***";
 
 //Keypad vars
 const int ROW_NUM = 4; //four rows

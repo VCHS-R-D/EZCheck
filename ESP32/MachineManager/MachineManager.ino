@@ -4,8 +4,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 //HTTP vars
-const char* ssid = "Metro";
-const char* password = "nosoup4u";
+const char* ssid = "***REMOVED***";
+const char* password = "***REMOVED***";
 
 const String machineID = "machine1";
 const String k = "http://10.124.6.136:8080";
